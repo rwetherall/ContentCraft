@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project name="content-craft" basedir=".">
+
+	<property file="build.local.properties" />
+	<property file="build.properties" />
+
+	<property environment="env" />
+	
+	<target name="install">
+      <exec executable="${mvn.exec}" failonerror="true">
+         <arg value="install" />
+         <arg value="-DskipTests" />
+      </exec>
+   </target>
+	
+	<target name="deploy" depends="install">
+		<copy file="${jar.contentcraft}" todir="${dir.plugins}" failonerror="true" />
+   </target>
+	
+	<target name="start-server">
+		<java jar="${jar.mc-server}" fork="true" dir="${dir.mc-server}">
+			<jvmarg value="-Xmx1024M"/>
+		    <arg value="-o"/>
+			<arg value="true"/>			
+		</java>
+	</target>
+	
+</project>

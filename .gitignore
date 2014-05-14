@@ -1,12 +1,29 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
+
+*.dat*
+*.lock
+*.mca
+*.yml
+
+*banned*
+*ops*
+*server.log*
+*server.properties
+*white-list*
+
+**/world/**
+**/world_nether/**
+**/world_the_end/**
+**/plugins/**
 
 
 target
 .classpath
 .project
 .settings
+
+build.local.properties
