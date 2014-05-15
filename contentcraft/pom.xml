@@ -8,11 +8,12 @@
   <packaging>jar</packaging>
 
   <name>contentcraft</name>
+  
   <repositories>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
+        </repository>        
   </repositories>
   
   <build>
@@ -60,7 +61,7 @@
           <dependency>
              <groupId>org.bukkit</groupId>
              <artifactId>bukkit</artifactId>
-             <version>1.4.6-R0.4-SNAPSHOT</version>
+             <version>1.7.9-R0.2-SNAPSHOT</version>
              <type>jar</type>
              <scope>compile</scope>
           </dependency>

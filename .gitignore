@@ -18,7 +18,10 @@
 **/world/**
 **/world_nether/**
 **/world_the_end/**
-**/plugins/**
+
+**/mc-server/*.json
+**/mc-server/logs
+**/mc-server/plugins/*.*
 
 dependency-reduced-pom.xml
 

@@ -29,12 +29,14 @@ public class ContentCraftPlugin extends JavaPlugin
 		// get the plugin description file
 		PluginDescriptionFile descriptionFile = getDescription();
 		
+		
+		
 		// get the command information map
 		Map<String, Map<String, Object>> commands = descriptionFile.getCommands();
 		for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
 		{
 			// look for the executor class
-			String className = (String)entry.getValue().get("class");
+			String className = (String)entry.getValue().get("executor");
 			if (className != null)
 			{
 				try
