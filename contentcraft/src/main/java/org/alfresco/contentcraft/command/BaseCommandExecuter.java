@@ -3,9 +3,9 @@
  */
 package org.alfresco.contentcraft.command;
 
-import org.alfresco.contentcraft.command.annotation.CommandBean;
+import java.util.Map;
+
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,39 +17,19 @@ import org.bukkit.entity.Player;
  */
 public abstract class BaseCommandExecuter implements CommandExecutor
 {
-	public String getName()
+	protected String name;
+	
+	protected Map<String, Object> properties;
+	
+	public BaseCommandExecuter(String name, Map<String, Object> properties)
 	{
-		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
-		if (commandBean == null || commandBean.name() == null)
-		{
-			throw new CommandException("Command must have a name.");
-		}
-		
-		return commandBean.name();
+		this.name = name;
+		this.properties = properties;
 	}
 	
-	public boolean isPlayerCommand()
+	protected boolean isPlayerCommand()
 	{
-		boolean result = true;
-		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
-		if (commandBean != null)
-		{
-			result = commandBean.playerCommand();
-		}
-		
-		return result;
-	}
-	
-	public String getUsage()
-	{
-		String result = null;
-		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
-		if (commandBean != null)
-		{
-			result = commandBean.usage();
-		}
-		
-		return result;		
+		return true;
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 

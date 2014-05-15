@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
-import org.alfresco.contentcraft.command.annotation.CommandBean;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
@@ -24,17 +23,17 @@ import org.bukkit.event.player.PlayerInteractEvent;
  * 
  * @author Roy Wetherall
  */
-@CommandBean
-(
-   name="bulldozer", 
-   usage="/bulldozer on|off [size]"
-)
 public class BulldozerCommandExecuter extends BaseCommandExecuter implements Listener
 {
 	private Map<Player, Boolean> playerStates = new HashMap<Player, Boolean>(13);
 	
 	private ThreadLocal<BlockFace> lastBlockFace = new ThreadLocal<BlockFace>();
 
+	public BulldozerCommandExecuter(String name, Map<String, Object> properties) 
+	{
+		super(name, properties);
+	}
+	
 	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
 		boolean result = true;	

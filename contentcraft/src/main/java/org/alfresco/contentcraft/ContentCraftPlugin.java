@@ -3,7 +3,12 @@
  */
 package org.alfresco.contentcraft;
 
-import org.alfresco.contentcraft.command.CommandRegistry;
+import java.lang.reflect.Constructor;
+import java.util.Map;
+
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -21,8 +26,33 @@ public class ContentCraftPlugin extends JavaPlugin
 	{
 		getLogger().info("onEnable had been invoked");
 		
-		// register commands
-		CommandRegistry.getInstance().initialise(this);
+		PluginDescriptionFile descriptionFile = getDescription();
+		
+		Map<String, Map<String, Object>> commands = descriptionFile.getCommands();
+		for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
+		{
+			String className = (String)entry.getValue().get("class");
+			if (className != null)
+			{
+				try
+				{
+					Class<?> clazz = Class.forName(className);
+					Constructor<?> ctor = clazz.getConstructor(String.class, Map.class);
+					CommandExecutor commandExecutor = (CommandExecutor)ctor.newInstance(entry.getKey(), entry.getValue());
+					
+					getCommand(entry.getKey()).setExecutor(commandExecutor);
+					
+					if (commandExecutor instanceof Listener)
+					{
+						getServer().getPluginManager().registerEvents((Listener)commandExecutor, this);
+					}
+				}
+				catch (Exception exception)
+				{
+					exception.printStackTrace();
+				} 
+			}
+		}
 	}
 	
 	/**

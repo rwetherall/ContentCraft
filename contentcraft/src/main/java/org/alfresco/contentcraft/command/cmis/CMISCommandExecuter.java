@@ -3,10 +3,11 @@
  */
 package org.alfresco.contentcraft.command.cmis;
 
+import java.util.Map;
+
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
-import org.alfresco.contentcraft.command.annotation.CommandBean;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.bukkit.command.Command;
@@ -17,13 +18,13 @@ import org.bukkit.command.CommandSender;
  * 
  * @author Roy Wetherall
  */
-@CommandBean
-(
-   name="cmis",
-   usage="/cmis test" 
-)
 public class CMISCommandExecuter extends BaseCommandExecuter 
 {
+	public CMISCommandExecuter(String name, Map<String, Object> properties) 
+	{
+		super(name, properties);
+	}
+
 	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
 		// get the command to execute

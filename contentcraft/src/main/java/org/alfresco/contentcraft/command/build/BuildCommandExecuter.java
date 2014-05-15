@@ -3,9 +3,10 @@
  */
 package org.alfresco.contentcraft.command.build;
 
+import java.util.Map;
+
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
-import org.alfresco.contentcraft.command.annotation.CommandBean;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -17,13 +18,13 @@ import org.bukkit.command.CommandSender;
  * 
  * @author Roy Wetherall
  */
-@CommandBean
-(
-   name="build", 
-   usage="/build site [name]"
-)
 public class BuildCommandExecuter extends BaseCommandExecuter
 {
+	public BuildCommandExecuter(String name, Map<String, Object> properties) 
+	{
+		super(name, properties);
+	}
+
 	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
 		boolean result = false;
