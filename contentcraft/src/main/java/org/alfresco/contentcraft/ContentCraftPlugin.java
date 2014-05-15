@@ -26,24 +26,31 @@ public class ContentCraftPlugin extends JavaPlugin
 	{
 		getLogger().info("onEnable had been invoked");
 		
+		// get the plugin description file
 		PluginDescriptionFile descriptionFile = getDescription();
 		
+		// get the command information map
 		Map<String, Map<String, Object>> commands = descriptionFile.getCommands();
 		for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
 		{
+			// look for the executor class
 			String className = (String)entry.getValue().get("class");
 			if (className != null)
 			{
 				try
 				{
+					// create an instance of the the executor class
 					Class<?> clazz = Class.forName(className);
 					Constructor<?> ctor = clazz.getConstructor(String.class, Map.class);
 					CommandExecutor commandExecutor = (CommandExecutor)ctor.newInstance(entry.getKey(), entry.getValue());
 					
+					// set the command executor
 					getCommand(entry.getKey()).setExecutor(commandExecutor);
 					
+					// if the command is a listener
 					if (commandExecutor instanceof Listener)
 					{
+						// register events
 						getServer().getPluginManager().registerEvents((Listener)commandExecutor, this);
 					}
 				}
