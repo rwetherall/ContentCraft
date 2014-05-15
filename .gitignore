@@ -20,6 +20,7 @@
 **/world_the_end/**
 **/plugins/**
 
+dependency-reduced-pom.xml
 
 target
 .classpath

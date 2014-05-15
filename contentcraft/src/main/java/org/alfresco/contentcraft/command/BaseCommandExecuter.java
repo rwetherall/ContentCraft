@@ -3,7 +3,9 @@
  */
 package org.alfresco.contentcraft.command;
 
+import org.alfresco.contentcraft.command.annotation.CommandBean;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,28 +17,63 @@ import org.bukkit.entity.Player;
  */
 public abstract class BaseCommandExecuter implements CommandExecutor
 {
-	public abstract String getName();
+	public String getName()
+	{
+		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
+		if (commandBean == null || commandBean.name() == null)
+		{
+			throw new CommandException("Command must have a name.");
+		}
+		
+		return commandBean.name();
+	}
 	
 	public boolean isPlayerCommand()
 	{
-		return false;
+		boolean result = true;
+		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
+		if (commandBean != null)
+		{
+			result = commandBean.playerCommand();
+		}
+		
+		return result;
+	}
+	
+	public String getUsage()
+	{
+		String result = null;
+		CommandBean commandBean = getClass().getAnnotation(CommandBean.class);
+		if (commandBean != null)
+		{
+			result = commandBean.usage();
+		}
+		
+		return result;		
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
 	{
 		boolean result = true;
 		
-		// FIXME
-		// cross check the name of the command
-		
-		// FIXME
-		// cross check the number of expected arguments
-		
-		// cross check whether we are expecting this command from a player or not
-		if (checkForPlayerCommand(sender) == true)
+		try
 		{
-			// execute the command
-			result = onCommandImpl(sender, command, label, args);
+			// FIXME
+			// cross check the name of the command
+			
+			// FIXME
+			// cross check the number of expected arguments
+			
+			// cross check whether we are expecting this command from a player or not
+			if (checkForPlayerCommand(sender) == true)
+			{
+				// execute the command
+				result = onCommandImpl(sender, command, label, args);
+			}
+		}
+		catch (CommandUsageException exception)
+		{
+			// present usage to user
 		}
 		
 		return result;
@@ -69,6 +106,6 @@ public abstract class BaseCommandExecuter implements CommandExecutor
 	 * @param args
 	 * @return
 	 */
-	public abstract boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args);
+	public abstract boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException;
 
 }

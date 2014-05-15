@@ -3,6 +3,9 @@ package org.alfresco.contentcraft.command;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.alfresco.contentcraft.command.build.BuildCommandExecuter;
+import org.alfresco.contentcraft.command.bulldozer.BulldozerCommandExecuter;
+import org.alfresco.contentcraft.command.cmis.CMISCommandExecuter;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,6 +40,7 @@ public class CommandRegistry
 		// register all the commands
 		commandExecutors.add(new BuildCommandExecuter());
 		commandExecutors.add(new BulldozerCommandExecuter());
+		commandExecutors.add(new CMISCommandExecuter());
 	}
 	
 	/**
