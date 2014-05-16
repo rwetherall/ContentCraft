@@ -12,10 +12,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.metadata.MetadataValueAdapter;
 import org.bukkit.util.Vector;
+
+import com.avaje.ebeaninternal.server.ddl.AddForeignKeysVisitor;
 
 public class SiteBuilder implements Builder 
 {
@@ -65,24 +66,6 @@ public class SiteBuilder implements Builder
 			
 			origin.add(UP.clone().multiply(3));
 			origin.add(direction.clone().multiply(3));
-			
-//			// build stairs to next floor
-//			origin.add(direction.clone().multiply(size));
-//			origin.add(UP);
-//			
-//			Block block = origin.getBlock();
-//			block.setType(Material.WOOD_STAIRS);
-//			origin.add(UP);
-//			origin.add(direction);
-//			
-//			block = origin.getBlock();
-//			block.setType(Material.WOOD_STAIRS);
-//			origin.add(UP);
-//			origin.add(direction);
-//			
-//			block = origin.getBlock();
-//			block.setType(Material.WOOD_STAIRS);
-//			origin.add(direction);
 			
 			// start to build folder structure
 			buildFolder(origin, direction, docLibTree);
@@ -171,35 +154,62 @@ public class SiteBuilder implements Builder
 		Block location = start.getBlock();
 		Block bottomBlock = location.getRelative(BlockFace.UP, 1);
 		Block topBlock = bottomBlock.getRelative(BlockFace.UP, 1);
-		Block sign = topBlock.getRelative(BlockFace.UP, 1);
 		
 		Byte top = (0x8); // top half with hinge on right		
-		Byte bottom = (0x1);		
+		Byte bottom = (0x1);	
+		BlockFace face = BlockFace.NORTH;
+		
 		if (direction.getZ() == 1)
 		{
 			// north
 			bottom = (0x1);
+			face = BlockFace.NORTH;
 		}
 		else if (direction.getZ() == -1)
 		{
 			// south
 			bottom = (0x3);
+			face = BlockFace.SOUTH;
 		}
 		else if (direction.getX() == -1)
 		{
 			// east
 			bottom = (0x2);
+			face = BlockFace.EAST;
 		}
 		else if (direction.getX() == 1)
 		{
 			// west
 			bottom = (0x0);
+			face = BlockFace.WEST;
 		}
 		
 		bottomBlock.setTypeIdAndData( 64, bottom, false);
 		topBlock.setTypeIdAndData( 64, top, false);
 		
-		//Block signBlock = 
+		Location temp = start.clone();
+		temp.add(UP);
+		temp.add(rotate90(direction).multiply(2));
+		Block signBlock = temp.getBlock();
+		signBlock.setType(Material.SIGN_POST);
+		
+		//signBlock.setType(Material.WALL_SIGN);
+
+		org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(signBlock.getState());
+		
+		org.bukkit.material.Sign signData = (org.bukkit.material.Sign)(sign.getData());
+		signData.setFacingDirection(face);
+		
+		sign.setLine(0, name);
+		sign.update();
+		System.out.println(sign.getLine(0));
+
+		
+		
+//		sign.setType(Material.SIGN);
+//	    Sign state = (Sign)sign.getState();
+//	    state.setLine(0, "Boo Yeah");
+//	    state.update();
 	}
 	
 	private Vector rotate90(Vector vector)
