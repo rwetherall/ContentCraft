@@ -34,17 +34,12 @@ public class BulldozerCommandExecuter extends BaseCommandExecuter implements Lis
 		super(name, properties);
 	}
 	
-	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
+	public void onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
-		boolean result = true;	
-		
 		Player player = (Player)sender;	
 		playerStates.put(player, getState(args[0]));
 		
-		player.sendMessage("Setting bulldozer mode " + args[0] + ".");
-		
-		return result;
-		
+		player.sendMessage("Setting bulldozer mode " + args[0] + ".");		
 	}
 	
 	private boolean getState(String requiredState)

@@ -25,7 +25,7 @@ public class CMISCommandExecuter extends BaseCommandExecuter
 		super(name, properties);
 	}
 
-	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
+	public void onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
 		// get the command to execute
 
@@ -33,8 +33,6 @@ public class CMISCommandExecuter extends BaseCommandExecuter
 		Folder rootFolder = session.getRootFolder();
 		
 		System.out.println("The root folder is " + rootFolder.getName());
-		
-		return true;
 	}
 	
 

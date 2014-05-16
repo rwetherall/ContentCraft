@@ -3,40 +3,70 @@
  */
 package org.alfresco.contentcraft.command.build;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 /**
- * Example command that can be used to show plugin working!
- * 
- * TODO will be the basis of building the different repository elements?
- * TODO for example .. /build site "my site" .. could build something that represents the site in the repo
+ * Build command.
  * 
  * @author Roy Wetherall
  */
 public class BuildCommandExecuter extends BaseCommandExecuter
 {
+	private Map<String, Builder> builders = new HashMap<String, Builder>();
+	
 	public BuildCommandExecuter(String name, Map<String, Object> properties) 
 	{
 		super(name, properties);
+		
+		registerBuilder(new StarBurstBuilder());
+	}
+	
+	protected void registerBuilder(Builder builder)
+	{
+		builders.put(builder.getName(), builder);
 	}
 
-	public boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
+	public void onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
 	{
-		boolean result = false;
-		
-		// check we have at least one arg
-		if (args.length == 1)
+		// determine 'what' we are trying to build
+		String what = args[0];			
+		if (what == null)
 		{
-			String what = args[0];			
-			sender.getServer().broadcastMessage("We are going to build a " + what + "!");
+			throw new CommandUsageException("You must tell me what you want to build!");
 		}
 		
-		return result;
+		// get the builder
+		Builder builder = builders.get(what);
+		if (builder == null)
+		{
+			throw new CommandUsageException("I don't know how to build a " + what + "!");
+		}
 		
+		// get the start location for the build (3 blocks in the direction the player is facing)
+		Player player = (Player)sender;
+		Location location = player.getLocation();		
+		Vector playerDirection = round(location.getDirection());
+		
+		location.add(playerDirection.clone().multiply(3));
+		
+		// execute the builder
+		builder.build(location, playerDirection, args);		
+	}
+	
+	private Vector round(Vector vector)
+	{
+		vector.normalize();
+		return new Vector(Math.round(vector.getX()),
+				          Math.round(vector.getY()),
+				          Math.round(vector.getZ()));
 	}
 }

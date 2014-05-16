@@ -6,6 +6,8 @@ package org.alfresco.contentcraft.cmis;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
@@ -33,6 +35,19 @@ public class CMIS
 		parameter.put(SessionParameter.REPOSITORY_ID, REPOSITORY_ID);
 		
 		return sessionFactory.createSession(parameter);
+	}
+	
+	public static Folder getSiteRoot(Session session, String siteName)
+	{
+		String docLibPath = "/sites/" + siteName + "/documentLibrary";
+		
+		CmisObject folder = session.getObjectByPath(docLibPath);
+		if (!(folder instanceof Folder))
+		{
+			throw new RuntimeException("Unable to get site root for site '" + siteName + "'");
+		}
+		
+		return (Folder)folder;
 	}
 
 }

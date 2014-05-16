@@ -6,6 +6,7 @@ package org.alfresco.contentcraft.command;
 import java.util.Map;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,12 +49,16 @@ public abstract class BaseCommandExecuter implements CommandExecutor
 			if (checkForPlayerCommand(sender) == true)
 			{
 				// execute the command
-				result = onCommandImpl(sender, command, label, args);
+				onCommandImpl(sender, command, label, args);
+			}
+			else
+			{
+				throw new CommandException("This command can only be executed by a player.");
 			}
 		}
 		catch (CommandUsageException exception)
 		{
-			// present usage to user
+			result = false;
 		}
 		
 		return result;
@@ -86,6 +91,6 @@ public abstract class BaseCommandExecuter implements CommandExecutor
 	 * @param args
 	 * @return
 	 */
-	public abstract boolean onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException;
+	public abstract void onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException;
 
 }
