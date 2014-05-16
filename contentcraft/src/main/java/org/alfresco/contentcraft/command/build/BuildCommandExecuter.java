@@ -21,13 +21,15 @@ import org.bukkit.util.Vector;
  */
 public class BuildCommandExecuter extends BaseCommandExecuter
 {
+	protected Player player;
+	
 	private Map<String, Builder> builders = new HashMap<String, Builder>();
 	
 	public BuildCommandExecuter(String name, Map<String, Object> properties) 
 	{
 		super(name, properties);
 		
-		registerBuilder(new StarBurstBuilder());
+		registerBuilder(new SiteBuilder());
 	}
 	
 	protected void registerBuilder(Builder builder)
@@ -51,15 +53,17 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 			throw new CommandUsageException("I don't know how to build a " + what + "!");
 		}
 		
+		// stash the the player
+		player = (Player)sender;
+		
 		// get the start location for the build (3 blocks in the direction the player is facing)
-		Player player = (Player)sender;
 		Location location = player.getLocation();		
 		Vector playerDirection = round(location.getDirection());
 		
 		location.add(playerDirection.clone().multiply(3));
 		
 		// execute the builder
-		builder.build(location, playerDirection, args);		
+		builder.build(player, location, playerDirection, args);		
 	}
 	
 	private Vector round(Vector vector)

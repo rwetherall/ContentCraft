@@ -59,6 +59,12 @@ public abstract class BaseCommandExecuter implements CommandExecutor
 		catch (CommandUsageException exception)
 		{
 			result = false;
+			
+			exception.printStackTrace();
+		}
+		catch (RuntimeException exception)
+		{
+			exception.printStackTrace();
 		}
 		
 		return result;
