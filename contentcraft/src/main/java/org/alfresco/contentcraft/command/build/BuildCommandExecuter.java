@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
+import org.alfresco.contentcraft.util.VectorUtil;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -58,19 +59,11 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 		
 		// get the start location for the build (3 blocks in the direction the player is facing)
 		Location location = player.getLocation();		
-		Vector playerDirection = round(location.getDirection());
+		Vector playerDirection = VectorUtil.round(location.getDirection());
 		
 		location.add(playerDirection.clone().multiply(3));
 		
 		// execute the builder
 		builder.build(player, location, playerDirection, args);		
-	}
-	
-	private Vector round(Vector vector)
-	{
-		vector.normalize();
-		return new Vector(Math.round(vector.getX()),
-				          Math.round(vector.getY()),
-				          Math.round(vector.getZ()));
 	}
 }

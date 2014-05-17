@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.CommandUsageException;
+import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
@@ -12,17 +13,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Stairs;
 import org.bukkit.util.Vector;
-
-import com.avaje.ebeaninternal.server.ddl.AddForeignKeysVisitor;
 
 public class SiteBuilder implements Builder 
 {
-	private static final Vector UP = new Vector(0, 1, 0);
-	private static final Vector DOWN = new Vector(0, -1, 0);
-	
 	public String getName() 
 	{
 		return "site";
@@ -45,10 +42,7 @@ public class SiteBuilder implements Builder
 			throw new CommandUsageException("The site (" + siteName + ") you provided couldn't be found!");
 		}	
 		
-		List<Tree<FileableCmisObject>> docLibTree = siteRoot.getFolderTree(3);
-		
-		System.out.println(docLibTree.size());
-		
+		List<Tree<FileableCmisObject>> docLibTree = siteRoot.getFolderTree(3);		
 		if (docLibTree.size() == 0)
 		{
 			player.sendMessage("The site " + siteName + " has not root documents or folders.");
@@ -64,7 +58,7 @@ public class SiteBuilder implements Builder
 			origin.add(direction.clone().multiply(size));
 			buildStairs(origin, direction);
 			
-			origin.add(UP.clone().multiply(3));
+			origin.add(VectorUtil.UP.clone().multiply(3));
 			origin.add(direction.clone().multiply(3));
 			
 			// start to build folder structure
@@ -72,49 +66,38 @@ public class SiteBuilder implements Builder
 		}
 	}
 	
+	private void buildWoodenStairs(Location location, BlockFace blockFace)
+	{
+		Block block = location.getBlock();
+		block.setType(Material.WOOD_STAIRS);
+		
+		BlockState blockState = block.getState();
+		Stairs stairs = (Stairs)blockState.getData();
+		stairs.setFacingDirection(blockFace);
+		blockState.setData(stairs);
+		blockState.update();
+	}
+	
 	private void buildStairs(Location start, Vector direction)
 	{
-		Byte facing = (0x1);		
-		if (direction.getZ() == -1)
-		{
-			// north
-			facing = (0x3);
-		}
-		else if (direction.getZ() == 1)
-		{
-			// south
-			facing = (0x2);
-		}
-		else if (direction.getX() == 1)
-		{
-			// east
-			facing = (0x0);
-		}
-		else if (direction.getX() == -1)
-		{
-			// west
-			facing = (0x1);
-		}
-		
+
 		Location location = start.clone();
 		
 		// build stairs to next floor
-		location.add(UP);
+		location.add(VectorUtil.UP);
 		
-		Block block = location.getBlock();
-		block.setTypeIdAndData(53, facing, false);
+		buildWoodenStairs(location, VectorUtil.toBlockFace(direction));
 		
-		location.add(UP);
+		location.add(VectorUtil.UP);
 		location.add(direction);
 		
-		block = location.getBlock();
-		block.setTypeIdAndData(53, facing, false);
+		buildWoodenStairs(location, VectorUtil.toBlockFace(direction));
 		
-		location.add(UP);
+		location.add(VectorUtil.UP);
 		location.add(direction);
 		
-		block = location.getBlock();
-		block.setTypeIdAndData(53, facing, false);
+		buildWoodenStairs(location, VectorUtil.toBlockFace(direction));
+		
 		location.add(direction);		
 	}
 	
@@ -188,8 +171,8 @@ public class SiteBuilder implements Builder
 		topBlock.setTypeIdAndData( 64, top, false);
 		
 		Location temp = start.clone();
-		temp.add(UP);
-		temp.add(rotate90(direction).multiply(2));
+		temp.add(VectorUtil.UP);
+		temp.add(VectorUtil.rotate90(direction).multiply(2));
 		Block signBlock = temp.getBlock();
 		signBlock.setType(Material.SIGN_POST);
 		
@@ -198,34 +181,18 @@ public class SiteBuilder implements Builder
 		org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(signBlock.getState());
 		
 		org.bukkit.material.Sign signData = (org.bukkit.material.Sign)(sign.getData());
-		signData.setFacingDirection(face);
-		
+		signData.setFacingDirection(face);		
 		sign.setLine(0, name);
 		sign.update();
-		System.out.println(sign.getLine(0));
+	}
 
-		
-		
-//		sign.setType(Material.SIGN);
-//	    Sign state = (Sign)sign.getState();
-//	    state.setLine(0, "Boo Yeah");
-//	    state.update();
-	}
-	
-	private Vector rotate90(Vector vector)
-	{
-		double x = vector.getZ()*-1;
-		double z = vector.getX();		
-		return new Vector(x, vector.getY(), z);
-	}
-	
 	private void square(Location start, Vector direction, int size, Material material)
 	{
 		Location localStart = start.clone();
 		
 		for (int j = 0; j < size; j++)
 		{			
-			line(localStart, rotate90(direction), size, material);
+			line(localStart, VectorUtil.rotate90(direction), size, material);
 			localStart.add(direction);
 		}
 	}
