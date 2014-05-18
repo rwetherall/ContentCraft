@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.CommandUsageException;
+import org.alfresco.contentcraft.util.Direction;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -25,8 +26,11 @@ public class SiteBuilder implements Builder
 		return "site";
 	}
 
-	public void build(Player player, Location start, Vector direction, String... args) throws CommandUsageException
+	public void build(Player player, Location start, Direction newDirection, String... args) throws CommandUsageException
 	{
+		// temp
+		Vector direction = newDirection.toVector();
+		
 		// get the site we want to use as a base
 		String siteName = args[1];
 		if (siteName == null || siteName.length() == 0)

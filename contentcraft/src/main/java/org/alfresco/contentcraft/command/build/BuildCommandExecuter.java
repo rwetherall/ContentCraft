@@ -3,17 +3,18 @@
  */
 package org.alfresco.contentcraft.command.build;
 
+import static org.alfresco.contentcraft.util.Movement.forward;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
-import org.alfresco.contentcraft.util.VectorUtil;
+import org.alfresco.contentcraft.util.Direction;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 /**
  * Build command.
@@ -59,11 +60,13 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 		
 		// get the start location for the build (3 blocks in the direction the player is facing)
 		Location location = player.getLocation();		
-		Vector playerDirection = VectorUtil.round(location.getDirection());
+		Direction direction = new Direction(location.getDirection());
+		direction.flaten();
 		
-		location.add(playerDirection.clone().multiply(3));
+		// move forward 3 blocks to starting location
+		location = forward(location, direction, 3);
 		
 		// execute the builder
-		builder.build(player, location, playerDirection, args);		
+		builder.build(player, location, direction, args);		
 	}
 }
