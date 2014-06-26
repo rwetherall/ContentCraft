@@ -29,8 +29,6 @@ public class ContentCraftPlugin extends JavaPlugin
 		// get the plugin description file
 		PluginDescriptionFile descriptionFile = getDescription();
 		
-		
-		
 		// get the command information map
 		Map<String, Map<String, Object>> commands = descriptionFile.getCommands();
 		for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
