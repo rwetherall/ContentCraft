@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package org.alfresco.contentcraft.command.cmis;
 
 import java.util.Map;

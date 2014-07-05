@@ -131,6 +131,7 @@ public class SiteBuilder implements Builder
 		}		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void buildDoor(Location start, Vector direction, String name)
 	{
 		
