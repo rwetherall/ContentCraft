@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,7 +22,6 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  * Macro command executer implementation.
@@ -37,8 +37,9 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 	private static final String CMD_STOP = "stop";
 	private static final String CMD_RUN = "run";
 	private static final String CMD_LIST = "list";
+	private static final String CMD_DELETE = "delete";
 	
-	/** map of currenlty available macros */
+	/** map of currently available macros */
 	private Map<String, Macro> macros = new HashMap<String, Macro>();
 	
 	/**
@@ -50,6 +51,11 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 	public MacroCommandExecuter(String name, Map<String, Object> properties) 
 	{
 		super(name, properties);
+	}
+	
+	public Macro getMacro(String name)
+	{
+		return macros.get(name);
 	}
 
 	/**
@@ -101,7 +107,14 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			{
 				if (macro != null)
 				{
-					macro.run();
+					boolean runRepeat = false;
+					
+					if (args.length == 3 && "-R".equals(args[2]))
+					{
+						runRepeat = true;
+					}
+					
+					macro.run(runRepeat);
 				}
 			}
 		}
@@ -169,7 +182,9 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 		} 
 	}
 	
-	@SuppressWarnings("rawtypes")
+	/**
+	 * 
+	 */
 	private void load()
 	{
 		File file = new File(MACRO_CONFIG_FILE);
@@ -179,17 +194,8 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			{
 				FileReader fileReader = new FileReader(file);
 				try
-				{
-					JSONParser jsonParser = new JSONParser();
-					JSONArray jsonMacros = (JSONArray)jsonParser.parse(fileReader);
-					
-					Iterator it = jsonMacros.iterator();
-					while (it.hasNext()) 
-					{
-						JSONObject jsonMacro = (JSONObject)it.next();
-						Macro macro = Macro.fromJSON(jsonMacro);
-						macros.put(macro.getName(), macro);
-					}
+				{					
+					load(fileReader);
 				}
 				finally
 				{
@@ -199,11 +205,29 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			catch (IOException e)
 			{
 				e.printStackTrace();
-			}
-			catch (ParseException e)
-			{
-				e.printStackTrace();
 			}			
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public void load(Reader reader)
+	{
+		try
+		{
+			JSONParser jsonParser = new JSONParser();
+			JSONArray jsonMacros = (JSONArray)jsonParser.parse(reader);
+			
+			Iterator it = jsonMacros.iterator();
+			while (it.hasNext()) 
+			{
+				JSONObject jsonMacro = (JSONObject)it.next();
+				Macro macro = Macro.fromJSON(jsonMacro);
+				macros.put(macro.getName(), macro);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

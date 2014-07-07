@@ -35,6 +35,8 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 	
 	protected void registerBuilder(Builder builder)
 	{
+		
+		
 		builders.put(builder.getName(), builder);
 	}
 

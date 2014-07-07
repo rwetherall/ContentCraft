@@ -18,6 +18,13 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class ContentCraftPlugin extends JavaPlugin 
 {
+	private static ContentCraftPlugin plugin;
+	
+	public static ContentCraftPlugin getPlugin()
+	{
+		return plugin;
+	}
+	
 	/**
 	 * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
 	 */
@@ -25,6 +32,7 @@ public class ContentCraftPlugin extends JavaPlugin
 	public void onEnable() 
 	{
 		getLogger().info("onEnable had been invoked");
+		ContentCraftPlugin.plugin = this;
 		
 		// get the plugin description file
 		PluginDescriptionFile descriptionFile = getDescription();

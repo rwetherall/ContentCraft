@@ -24,6 +24,7 @@ public class Macro
 	private Location startLocation;
 	private boolean recording = false;	
 	private boolean runPending = false;
+	private boolean runRepeat = false;
 	private List<MacroAction> actions = new ArrayList<MacroAction>(27);
 	
 	/**
@@ -63,7 +64,7 @@ public class Macro
 	}
 	
 	
-	public void run()
+	public void run(boolean runRepeat)
 	{
 		if (!runPending)
 		{
@@ -74,6 +75,15 @@ public class Macro
 			}
 			
 			runPending = true;
+			this.runRepeat = true;
+		}
+	}
+	
+	public void run(Location location)
+	{
+		for (MacroAction action : actions) 
+		{
+			action.execute(location);
 		}
 	}
 	
@@ -95,6 +105,8 @@ public class Macro
 	public void stop()
 	{
 		recording = false;
+		runPending = false;
+		runRepeat = false;
 	}
 
 	/*package*/ void onBlockBreak(BlockBreakEvent event)
@@ -110,7 +122,6 @@ public class Macro
 				startLocation = location;
 			}
 					
-			System.out.println("adding block break action");
 			actions.add(BreakBlockMacroAction.create(brokenBlock, startLocation));
 		}
 	}
@@ -141,15 +152,15 @@ public class Macro
 		}
 		else if (runPending)
 		{
-			System.out.println("Pending macro " + name + ": onBlockPlace");
-			runPending = false;
-			
-			for (MacroAction action : actions) 
+			if (!runRepeat)
 			{
-				action.execute(placedLocation);
+				runPending = false;
 			}
+			run(placedLocation);
 		}
 	}
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	/*package*/JSONObject toJSON()
