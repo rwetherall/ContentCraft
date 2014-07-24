@@ -8,6 +8,7 @@ import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.CommandUsageException;
 import org.alfresco.contentcraft.command.macro.Macro;
+import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
@@ -15,6 +16,8 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -89,17 +92,36 @@ public class SiteBuilder implements Builder
 			Location folderFrontLocation = start.clone();
 			for (Tree<FileableCmisObject> tree : docLibTree) 
 			{
-				String folderName = tree.getItem().getName();
+				FileableCmisObject folder = tree.getItem();
+				final String[] messages = 
+					{
+						folder.getName(),
+						folder.getDescription()
+					};
 				
-				folderFrontMacro.run(folderFrontLocation);
+				folderFrontMacro.run(folderFrontLocation, new MacroCallback() 
+				{
+					int signCount = 0;
+					
+					public void placeBlock(Block block) 
+					{
+						if (Material.WALL_SIGN.equals(block.getType()))
+						{
+							System.out.println(" ... found a sign and setting message " + messages[signCount]);
+							
+							org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(block.getState());	
+							//org.bukkit.material.Sign signData = (org.bukkit.material.Sign)(sign.getData());
+							sign.setLine(0, messages[signCount]);
+							sign.update();
+							signCount ++;
+						}
+					}					
+				});				
+				
 				folderFrontLocation.add(VectorUtil.UP.clone().multiply(5));				
 			}
 		}
 	}
 		
-	//org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(signBlock.getState());	
-	//org.bukkit.material.Sign signData = (org.bukkit.material.Sign)(sign.getData());
-	//signData.setFacingDirection(face);		
-	//sign.setLine(0, name);
-	//sign.update();
+	
 }

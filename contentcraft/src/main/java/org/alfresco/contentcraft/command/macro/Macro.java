@@ -64,7 +64,7 @@ public class Macro
 	}
 	
 	
-	public void run(boolean runRepeat)
+	public void runPending(boolean runRepeat)
 	{
 		if (!runPending)
 		{
@@ -75,16 +75,21 @@ public class Macro
 			}
 			
 			runPending = true;
-			this.runRepeat = true;
+			this.runRepeat = runRepeat;
 		}
 	}
 	
 	public void run(Location location)
 	{
+		run(location, null);
+	}
+	
+	public void run(Location location, MacroCallback callback)
+	{
 		for (MacroAction action : actions) 
 		{
-			action.execute(location);
-		}
+			action.execute(location, callback);
+		}		
 	}
 	
 	public void clear()

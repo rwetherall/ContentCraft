@@ -37,12 +37,18 @@ import org.json.simple.JSONObject;
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public void execute(Location startLocation) 
+	public void execute(Location startLocation, MacroCallback callback) 
 	{
 		Location location = getRelativeLocation(startLocation);
 		Block block = location.getBlock();
 		block.setType(material);
-		block.setData(data);			
+		block.setData(data);	
+		block.getState().update();
+		
+		if (callback != null)
+		{
+			callback.placeBlock(block);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

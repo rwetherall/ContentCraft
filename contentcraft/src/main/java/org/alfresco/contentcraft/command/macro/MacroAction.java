@@ -32,7 +32,7 @@ import org.json.simple.JSONObject;
 		this.vector = vector;
 	}
 	
-	public abstract void execute(Location startLocation);
+	public abstract void execute(Location startLocation, MacroCallback callback);
 	
 	protected Location getRelativeLocation(Location location)
 	{

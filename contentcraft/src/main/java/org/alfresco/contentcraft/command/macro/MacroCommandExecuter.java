@@ -114,7 +114,7 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 						runRepeat = true;
 					}
 					
-					macro.run(runRepeat);
+					macro.runPending(runRepeat);
 				}
 			}
 		}

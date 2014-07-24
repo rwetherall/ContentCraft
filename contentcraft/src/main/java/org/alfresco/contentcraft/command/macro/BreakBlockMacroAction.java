@@ -25,10 +25,15 @@ import org.bukkit.util.Vector;
 	}
 	
 	@Override
-	public void execute(Location startLocation) 
+	public void execute(Location startLocation, MacroCallback callback) 
 	{
 		Location location = getRelativeLocation(startLocation);
 		Block block = location.getBlock();
 		block.setType(Material.AIR);	
+		
+		if (callback != null)
+		{
+			callback.breakBlock(block);
+		}
 	}
 }
