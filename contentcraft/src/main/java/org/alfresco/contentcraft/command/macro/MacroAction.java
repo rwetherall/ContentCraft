@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
  * @author Roy Wetherall
  * @since 1.0
  */
-/*package*/ abstract class MacroAction 
+public abstract class MacroAction 
 {
 	private Vector vector;
 	

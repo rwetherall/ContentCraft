@@ -5,8 +5,15 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
-/*package*/ class BreakBlockMacroAction extends MacroAction 
+/**
+ * 
+ * @author Roy Wetherall
+ * @since 1.0
+ */
+public class BreakBlockMacroAction extends MacroAction 
 {
+	public static final String NAME = "breakBlockAction";
+	
 	public BreakBlockMacroAction() 
 	{
 		super();
@@ -33,7 +40,7 @@ import org.bukkit.util.Vector;
 		
 		if (callback != null)
 		{
-			callback.breakBlock(block);
+			callback.callback(NAME, block);
 		}
 	}
 }

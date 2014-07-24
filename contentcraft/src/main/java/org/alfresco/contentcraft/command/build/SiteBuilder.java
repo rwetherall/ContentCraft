@@ -10,6 +10,7 @@ import org.alfresco.contentcraft.command.CommandUsageException;
 import org.alfresco.contentcraft.command.macro.Macro;
 import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
+import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -29,6 +30,10 @@ import org.bukkit.util.Vector;
  */
 public class SiteBuilder implements Builder 
 {
+	/** sign values */
+	private static final int NUMBER_OF_LINES = 4;
+	private static final int LINE_LEN = 15;
+	
 	/** macro command */
 	private MacroCommandExecuter macroCommand;
 	
@@ -82,6 +87,7 @@ public class SiteBuilder implements Builder
 		// grab the macro command executer instance		
 		Macro folderFrontMacro = getMacroCommand().getMacro("site.folder.front");
 		
+		// get the folder tree
 		List<Tree<FileableCmisObject>> docLibTree = siteRoot.getFolderTree(3);		
 		if (docLibTree.size() == 0)
 		{
@@ -89,37 +95,77 @@ public class SiteBuilder implements Builder
 		}
 		else
 		{
+			// get the folder start location
 			Location folderFrontLocation = start.clone();
+			
 			for (Tree<FileableCmisObject> tree : docLibTree) 
 			{
+				// get the folder information
 				FileableCmisObject folder = tree.getItem();
 				final String[] messages = 
-					{
-						folder.getName(),
-						folder.getDescription()
-					};
+				{
+					folder.getName(),
+					folder.getDescription()
+				};
 				
+				// execute the folder front macro
 				folderFrontMacro.run(folderFrontLocation, new MacroCallback() 
 				{
+					/** sign count */
 					int signCount = 0;
 					
-					public void placeBlock(Block block) 
+					/**
+					 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
+					 */
+					public void callback(String macroAction, Block block) 
 					{
-						if (Material.WALL_SIGN.equals(block.getType()))
+						if (PlaceBlockMacroAction.NAME.equals(macroAction))
 						{
-							System.out.println(" ... found a sign and setting message " + messages[signCount]);
-							
-							org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(block.getState());	
-							//org.bukkit.material.Sign signData = (org.bukkit.material.Sign)(sign.getData());
-							sign.setLine(0, messages[signCount]);
-							sign.update();
-							signCount ++;
+							// set the messages on the signs
+							if (Material.WALL_SIGN.equals(block.getType()))
+							{
+								setSignMessage(block, messages[signCount]);
+								signCount ++;
+							}
 						}
 					}					
 				});				
 				
+				// move to the next folder location
 				folderFrontLocation.add(VectorUtil.UP.clone().multiply(5));				
 			}
+		}
+	}
+	
+	/**
+	 * Divde the string over the four available lines on the given 
+	 * sign.
+	 * 
+	 * @param block		sign block
+	 * @param message	message
+	 */
+	private void setSignMessage(Block block, String message)
+	{
+		if (message != null && !message.isEmpty())
+		{
+			org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(block.getState());	
+			
+			for (int line = 0; line < NUMBER_OF_LINES; line++) 
+			{
+				int startIndex = line * LINE_LEN;
+				int endIndex = (line + 1) * LINE_LEN;
+				if (endIndex < message.length())
+				{		
+					sign.setLine(line, message.substring(startIndex, endIndex));
+				}
+				else 
+				{
+					sign.setLine(line,  message.substring(startIndex));
+					break;
+				}
+			}
+			
+			sign.update();
 		}
 	}
 		

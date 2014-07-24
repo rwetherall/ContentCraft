@@ -19,13 +19,22 @@ import org.bukkit.util.Vector;
  * Build command.
  * 
  * @author Roy Wetherall
+ * @since  1.0
  */
 public class BuildCommandExecuter extends BaseCommandExecuter
 {
+	/** player */
 	protected Player player;
 	
+	/** map of builder */
 	private Map<String, Builder> builders = new HashMap<String, Builder>();
 	
+	/**
+	 * Default constructor
+	 * 
+	 * @param name			name 
+	 * @param properties	properties
+	 */
 	public BuildCommandExecuter(String name, Map<String, Object> properties) 
 	{
 		super(name, properties);
@@ -35,8 +44,6 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 	
 	protected void registerBuilder(Builder builder)
 	{
-		
-		
 		builders.put(builder.getName(), builder);
 	}
 

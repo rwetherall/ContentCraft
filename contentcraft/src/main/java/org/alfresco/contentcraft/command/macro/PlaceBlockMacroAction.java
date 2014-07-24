@@ -8,8 +8,10 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 import org.json.simple.JSONObject;
 
-/*package*/ class PlaceBlockMacroAction extends MacroAction 
+public class PlaceBlockMacroAction extends MacroAction 
 {
+	public static final String NAME = "placeBlockAction";
+	
 	private Material material;
 	private byte data;
 	
@@ -47,7 +49,7 @@ import org.json.simple.JSONObject;
 		
 		if (callback != null)
 		{
-			callback.placeBlock(block);
+			callback.callback(NAME, block);
 		}
 	}
 	
