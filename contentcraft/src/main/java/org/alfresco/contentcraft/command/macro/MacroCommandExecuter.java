@@ -117,6 +117,14 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 					macro.runPending(runRepeat);
 				}
 			}
+			else if (operation.equalsIgnoreCase(CMD_DELETE))
+			{
+				if (macro != null)
+				{
+					macros.remove(name);
+					save();
+				}
+			}
 		}
 	}
 	

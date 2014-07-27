@@ -12,8 +12,10 @@ import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.util.VectorUtil;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.bukkit.Location;
@@ -30,6 +32,10 @@ import org.bukkit.util.Vector;
  */
 public class SiteBuilder implements Builder 
 {
+	/** macro names */
+	private static final String SITE_FOLDER_FRONT = "site.folder.front";
+	private static final String SITE_FOLDER_MIDDLE = "site.folder.middle";
+	
 	/** sign values */
 	private static final int NUMBER_OF_LINES = 4;
 	private static final int LINE_LEN = 15;
@@ -83,58 +89,85 @@ public class SiteBuilder implements Builder
 		{
 			throw new CommandUsageException("The site (" + siteName + ") you provided couldn't be found!");
 		}	
+
+		// build the root folders
+		buildRootFolders(start, siteRoot.getChildren());			
 		
-		// grab the macro command executer instance		
-		Macro folderFrontMacro = getMacroCommand().getMacro("site.folder.front");
-		
-		// get the folder tree
-		List<Tree<FileableCmisObject>> docLibTree = siteRoot.getFolderTree(3);		
-		if (docLibTree.size() == 0)
-		{
-			player.sendMessage("The site " + siteName + " has not root documents or folders.");
-		}
-		else
-		{
-			// get the folder start location
-			Location folderFrontLocation = start.clone();
-			
-			for (Tree<FileableCmisObject> tree : docLibTree) 
-			{
-				// get the folder information
-				FileableCmisObject folder = tree.getItem();
-				final String[] messages = 
-				{
-					folder.getName(),
-					folder.getDescription()
-				};
+	}	
+	
+	/**
+	 * Build the root folders 
+	 * 
+	 * @param folderFrontLocation
+	 * @param docLibTree
+	 */
+	private void buildRootFolders(Location start, ItemIterable<CmisObject> items)
+	{
+		Location startLocation = start.clone();
 				
-				// execute the folder front macro
-				folderFrontMacro.run(folderFrontLocation, new MacroCallback() 
-				{
-					/** sign count */
-					int signCount = 0;
-					
-					/**
-					 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
-					 */
-					public void callback(String macroAction, Block block) 
-					{
-						if (PlaceBlockMacroAction.NAME.equals(macroAction))
-						{
-							// set the messages on the signs
-							if (Material.WALL_SIGN.equals(block.getType()))
-							{
-								setSignMessage(block, messages[signCount]);
-								signCount ++;
-							}
-						}
-					}					
-				});				
+		for (CmisObject item : items) 
+		{
+			if (item instanceof Folder)
+			{
+				// build root folder				
+				buildRootFolder(startLocation, (Folder)item);			
 				
 				// move to the next folder location
-				folderFrontLocation.add(VectorUtil.UP.clone().multiply(5));				
+				startLocation.add(VectorUtil.UP.clone().multiply(5));
 			}
+		}		
+	}
+	
+	/**
+	 * 
+	 * @param start
+	 * @param folder
+	 */
+	private void buildRootFolder(Location start, Folder folder)
+	{				
+		Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
+		
+		Location startClone = start.clone();
+		
+		final String[] messages = 
+		{
+			folder.getName(),
+			folder.getDescription()
+		};
+		
+		// execute the folder front macro
+		folderFrontMacro.run(startClone, new MacroCallback() 
+		{
+			/** sign count */
+			int signCount = 0;
+			
+			/**
+			 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
+			 */
+			public void callback(String macroAction, Block block) 
+			{
+				if (PlaceBlockMacroAction.NAME.equals(macroAction))
+				{
+					// set the messages on the signs
+					if (Material.WALL_SIGN.equals(block.getType()))
+					{
+						setSignMessage(block, messages[signCount]);
+						signCount ++;
+					}
+				}
+			}					
+		});	
+		
+		// TODO pair up the folders and extract the documents
+		
+		ItemIterable<CmisObject> children = folder.getChildren();
+		for (CmisObject child : children) 
+		{
+			
+			
 		}
+		
+		// execute the folder end macro
 	}
 	
 	/**
@@ -168,6 +201,46 @@ public class SiteBuilder implements Builder
 			sign.update();
 		}
 	}
-		
+	
+	// NOTES
+	
+	// chest .. Block->Chest.getInventry()
+	
+	// get information from a book
+	
+//	NBTTagCompound bookData = ((CraftItemStack) bookItem).getHandle().tag;
+//    
+//    this.author = bookData.getString("author");
+//    this.title = bookData.getString("title");
+//            
+//    NBTTagList nPages = bookData.getList("pages");
+//
+//    String[] sPages = new String[nPages.size()];
+//    for(int i = 0;i<nPages.size();i++)
+//    {
+//        sPages[i] = nPages.get(i).toString();
+//    }
+            
+
+	// create a new book
+	
+//    CraftItemStack newbook = new CraftItemStack(Material.WRITTEN_BOOK);
+//    
+//    NBTTagCompound newBookData = new NBTTagCompound();
+//    
+//    newBookData.setString("author",author);
+//    newBookData.setString("title",title);
+//            
+//    NBTTagList nPages = new NBTTagList();
+//    for(int i = 0;i<pages.length;i++)
+//    {  
+//        nPages.add(new NBTTagString(pages[i],pages[i]));
+//    }
+//    
+//    newBookData.set("pages", nPages);
+//
+//    newbook.getHandle().tag = newBookData;
+//    
+//    return (ItemStack) newbook;
 	
 }
