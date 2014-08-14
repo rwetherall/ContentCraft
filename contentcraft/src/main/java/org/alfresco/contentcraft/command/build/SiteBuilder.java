@@ -2,6 +2,7 @@ package org.alfresco.contentcraft.command.build;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alfresco.contentcraft.ContentCraftPlugin;
@@ -13,11 +14,9 @@ import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.client.api.Tree;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -126,6 +125,7 @@ public class SiteBuilder implements Builder
 	private void buildRootFolder(Location start, Folder folder)
 	{				
 		Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
+		Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
 		
 		Location startClone = start.clone();
 		
@@ -158,16 +158,25 @@ public class SiteBuilder implements Builder
 			}					
 		});	
 		
-		// TODO pair up the folders and extract the documents
 		
+		List<Folder> folders = new ArrayList<Folder>(21);
 		ItemIterable<CmisObject> children = folder.getChildren();
-		for (CmisObject child : children) 
+		for (CmisObject cmisObject : children) 
 		{
-			
-			
+			if (cmisObject instanceof Folder)
+			{
+				// add to folder list
+				folders.add((Folder)cmisObject);
+			}
 		}
 		
-		// execute the folder end macro
+		Location middleClone = startClone.clone().add(VectorUtil.NORTH.clone().multiply(4));
+		for (int i = 0; i < folders.size(); i++) 
+		{
+			folderMiddleMacro.run(middleClone);
+			middleClone.add(VectorUtil.NORTH.clone().multiply(7));
+			i++;
+		}
 	}
 	
 	/**
