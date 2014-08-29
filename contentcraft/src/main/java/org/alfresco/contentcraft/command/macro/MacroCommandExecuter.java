@@ -167,7 +167,10 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			JSONArray jsonMacros = new JSONArray();
 			for (Macro macro : macros.values()) 
 			{
-				jsonMacros.add(macro.toJSON());
+				if (!macro.isTransient())
+				{
+					jsonMacros.add(macro.toJSON());
+				}
 			}
 			
 			// write JSON to config file

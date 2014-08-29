@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 public class Macro 
 {
 	private String name;	
+	private boolean transientMacro = false;
 	private Location startLocation;
 	private boolean recording = false;	
 	private boolean runPending = false;
@@ -58,6 +59,11 @@ public class Macro
 		return name;
 	}
 	
+	public boolean isTransient() 
+	{
+		return transientMacro;
+	}
+	
 	public List<MacroAction> getActions() 
 	{
 		return actions;
@@ -86,6 +92,8 @@ public class Macro
 	
 	public void run(Location location, MacroCallback callback)
 	{
+		//System.out.println("Running macro: " + getName() + " at location " + location.toString());
+		
 		for (MacroAction action : actions) 
 		{
 			action.execute(location, callback);
@@ -163,9 +171,7 @@ public class Macro
 			}
 			run(placedLocation);
 		}
-	}
-	
-	
+	}		
 	
 	@SuppressWarnings("unchecked")
 	/*package*/JSONObject toJSON()
@@ -186,8 +192,14 @@ public class Macro
 	/*package*/ static Macro fromJSON(JSONObject jsonMacro)
 	{
 		Macro macro = new Macro((String)jsonMacro.get("name"));		
-		JSONArray jsonActions = (JSONArray)jsonMacro.get("actions");
 		
+		if (jsonMacro.containsKey("transient"))
+		{
+			boolean isTransient = (Boolean)jsonMacro.get("transient");
+			macro.transientMacro = isTransient;
+		}
+		
+		JSONArray jsonActions = (JSONArray)jsonMacro.get("actions");		
 		try
 		{
 			Iterator it = jsonActions.iterator();

@@ -34,6 +34,10 @@ public class SiteBuilder implements Builder
 	/** macro names */
 	private static final String SITE_FOLDER_FRONT = "site.folder.front";
 	private static final String SITE_FOLDER_MIDDLE = "site.folder.middle";
+	private static final String SITE_FOLDER_BACK = "site.folder.back";
+	private static final String SITE_FOLDER_PLATFORM = "site.folder.platform";
+	private static final String SITE_SUBFOLDER_LEFT = "site.subfolder.left";
+	private static final String SITE_SUBFOLDER_RIGHT = "site.subfolder.right";
 	
 	/** sign values */
 	private static final int NUMBER_OF_LINES = 4;
@@ -126,6 +130,10 @@ public class SiteBuilder implements Builder
 	{				
 		Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
 		Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
+		Macro folderEndMacro = getMacroCommand().getMacro(SITE_FOLDER_BACK);
+		Macro folderPlatformMacro = getMacroCommand().getMacro(SITE_FOLDER_PLATFORM);
+		Macro subFolderLeft = getMacroCommand().getMacro(SITE_SUBFOLDER_LEFT);
+		Macro subFolderRight = getMacroCommand().getMacro(SITE_SUBFOLDER_RIGHT);
 		
 		Location startClone = start.clone();
 		
@@ -158,7 +166,11 @@ public class SiteBuilder implements Builder
 			}					
 		});	
 		
+		// build the folder platform
+		Location platformStart = startClone.clone().add(VectorUtil.SOUTH.clone().multiply(2));
+		folderPlatformMacro.run(platformStart);
 		
+		// grab all sub-folders
 		List<Folder> folders = new ArrayList<Folder>(21);
 		ItemIterable<CmisObject> children = folder.getChildren();
 		for (CmisObject cmisObject : children) 
@@ -170,13 +182,22 @@ public class SiteBuilder implements Builder
 			}
 		}
 		
+		// build a middle section for each pair of folders
 		Location middleClone = startClone.clone().add(VectorUtil.NORTH.clone().multiply(4));
 		for (int i = 0; i < folders.size(); i++) 
 		{
-			folderMiddleMacro.run(middleClone);
-			middleClone.add(VectorUtil.NORTH.clone().multiply(7));
+			folderMiddleMacro.run(middleClone);			
+			subFolderLeft.run(middleClone.clone().add(VectorUtil.WEST));
 			i++;
+			if (i < folders.size())
+			{
+				subFolderRight.run(middleClone.clone().add(VectorUtil.EAST.clone().multiply(10)));
+			}
+			middleClone.add(VectorUtil.NORTH.clone().multiply(8));
 		}
+		
+		// build the end section
+		folderEndMacro.run(middleClone);
 	}
 	
 	/**
