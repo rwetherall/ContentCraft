@@ -13,7 +13,12 @@
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>     
+        </repository>          
+        <repository>
+            <id>maven.alfresco.com</id>
+            <name>Alfresco Maven Repository</name>
+            <url>http://maven.alfresco.com/nexus/content/groups/public/</url>
+        </repository>   
   </repositories>
   
   <build>
@@ -72,9 +77,15 @@
              <scope>test</scope>
           </dependency>
           <dependency>
-    		<groupId>org.apache.chemistry.opencmis</groupId>
-            <artifactId>chemistry-opencmis-client-impl</artifactId>
-            <version>0.10.0</version>
+    		 <groupId>org.apache.chemistry.opencmis</groupId>
+             <artifactId>chemistry-opencmis-client-impl</artifactId>
+             <version>0.10.0</version>
+          </dependency>
+          <dependency>
+             <groupId>org.alfresco.cmis.client</groupId>
+             <artifactId>alfresco-opencmis-extension</artifactId>
+             <version>0.2</version>
+             <type>jar</type>
           </dependency>
     </dependencies>
 </project>

@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alfresco.cmis.client.AlfrescoFolder;
 import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.CommandUsageException;
@@ -17,6 +18,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -87,7 +89,7 @@ public class SiteBuilder implements Builder
 		
 		// grab the document lib for the site
 		Session session = CMIS.connect();
-		Folder siteRoot = CMIS.getSiteRoot(session, siteName);
+		AlfrescoFolder siteRoot = CMIS.getSiteRoot(session, siteName);
 		if (siteRoot == null)
 		{
 			throw new CommandUsageException("The site (" + siteName + ") you provided couldn't be found!");
@@ -110,10 +112,10 @@ public class SiteBuilder implements Builder
 				
 		for (CmisObject item : items) 
 		{
-			if (item instanceof Folder)
+			if (item instanceof AlfrescoFolder)
 			{
 				// build root folder				
-				buildRootFolder(startLocation, (Folder)item);			
+				buildRootFolder(startLocation, (AlfrescoFolder)item);			
 				
 				// move to the next folder location
 				startLocation.add(VectorUtil.UP.clone().multiply(5));
@@ -126,7 +128,7 @@ public class SiteBuilder implements Builder
 	 * @param start
 	 * @param folder
 	 */
-	private void buildRootFolder(Location start, Folder folder)
+	private void buildRootFolder(Location start, AlfrescoFolder folder)
 	{				
 		Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
 		Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
@@ -140,7 +142,7 @@ public class SiteBuilder implements Builder
 		final String[] messages = 
 		{
 			folder.getName(),
-			folder.getDescription()
+			"Created By     " + folder.getPropertyValue(PropertyIds.CREATED_BY)
 		};
 		
 		// execute the folder front macro
@@ -186,7 +188,46 @@ public class SiteBuilder implements Builder
 		Location middleClone = startClone.clone().add(VectorUtil.NORTH.clone().multiply(4));
 		for (int i = 0; i < folders.size(); i++) 
 		{
-			folderMiddleMacro.run(middleClone);			
+			String folder2Name = "";
+			String folder2CreatedBy = "";
+			if (i+1 < folders.size())
+			{
+				Folder folder2 = folders.get(i+1);
+				folder2Name = folder2.getName();
+				folder2CreatedBy = "Created By     " + folder.getPropertyValue(PropertyIds.CREATED_BY);
+			}
+						
+			final String[] signs = 
+			{
+				folders.get(i).getName(),
+				"Created By     " + folder.getPropertyValue(PropertyIds.CREATED_BY),
+				folder2Name,
+				folder2CreatedBy
+			};
+			
+			folderMiddleMacro.run(middleClone, new MacroCallback() 
+			{
+				/** sign count */
+				int signCount = 0;
+				
+				/**
+				 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
+				 */
+				public void callback(String macroAction, Block block) 
+				{
+					if (PlaceBlockMacroAction.NAME.equals(macroAction))
+					{
+						// set the messages on the signs
+						if (Material.WALL_SIGN.equals(block.getType()))
+						{
+							setSignMessage(block, signs[signCount]);
+							signCount ++;
+						}
+					}
+				}					
+			});		
+			
+			
 			subFolderLeft.run(middleClone.clone().add(VectorUtil.WEST));
 			i++;
 			if (i < folders.size())
