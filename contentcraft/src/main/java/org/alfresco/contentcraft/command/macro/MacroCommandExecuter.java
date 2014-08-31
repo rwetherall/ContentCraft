@@ -42,6 +42,9 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 	/** map of currently available macros */
 	private Map<String, Macro> macros = new HashMap<String, Macro>();
 	
+	/** currently recording macro */
+	private Macro recordingMacro;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -77,6 +80,16 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			// temp
 			save();
 		}
+		else if (operation.equalsIgnoreCase(CMD_STOP))
+		{
+			// stop recording the currently recording macro
+			if (recordingMacro != null)
+			{
+				recordingMacro.stop();
+				recordingMacro = null;
+				save();
+			}
+		}
 		else
 		{
 			String name = args[1];
@@ -84,24 +97,27 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 			
 			if (operation.equalsIgnoreCase(CMD_START))
 			{
-				if (macro == null)
-				{
-					macro = Macro.startNew(name);
-					macros.put(name, macro);
+				if (recordingMacro == null)
+				{				
+					if (macro == null)
+					{
+						macro = Macro.startNew(name);
+						macros.put(name, macro);
+					}
+					else
+					{
+						macro.clear();
+						macro.start();
+					}	
+					
+					// store the currently recording macro
+					recordingMacro = macro;
 				}
 				else
 				{
-					macro.clear();
-					macro.start();
-				}						
-			}
-			else if (operation.equalsIgnoreCase(CMD_STOP))
-			{
-				if (macro != null)
-				{
-					macro.stop();
-					save();
-				}				
+					// a macro is already recording
+					sender.sendMessage("Can't start macro, because " + recordingMacro.getName() + " is currently being recorded.");
+				}
 			}
 			else if (operation.equalsIgnoreCase(CMD_RUN))
 			{

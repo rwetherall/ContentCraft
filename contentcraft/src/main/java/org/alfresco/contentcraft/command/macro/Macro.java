@@ -69,7 +69,6 @@ public class Macro
 		return actions;
 	}
 	
-	
 	public void runPending(boolean runRepeat)
 	{
 		if (!runPending)
