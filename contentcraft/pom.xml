@@ -9,11 +9,7 @@
 
   <name>contentcraft</name>
   
-  <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>          
+  <repositories>        
         <repository>
             <id>maven.alfresco.com</id>
             <name>Alfresco Maven Repository</name>
@@ -63,13 +59,13 @@
   
     <dependencies>
           <dependency>
-             <groupId>org.bukkit</groupId>
-             <artifactId>bukkit</artifactId>
-             <version>1.7.9-R0.2-SNAPSHOT</version>
-             <type>jar</type>
-             <scope>compile</scope>
-          </dependency>
-          <dependency>
+			 <artifactId>spigot-api</artifactId>
+			 <groupId>org.spigotmc</groupId>
+			 <version>1.7.10-R0.1-SNAPSHOT</version>
+			 <scope>system</scope>
+			 <systemPath>${basedir}/mc-server/spigot1649.jar</systemPath>
+		  </dependency>
+		  <dependency>
              <groupId>junit</groupId>
              <artifactId>junit</artifactId>
              <version>4.8.2</version>

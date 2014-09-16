@@ -108,7 +108,7 @@ public class SiteBuilder implements Builder
 	 */
 	private void buildRootFolders(Location start, ItemIterable<CmisObject> items)
 	{
-		Location startLocation = start.clone();
+		Location startLocation = start.clone().add(VectorUtil.NORTH.clone().multiply(10));
 				
 		for (CmisObject item : items) 
 		{
