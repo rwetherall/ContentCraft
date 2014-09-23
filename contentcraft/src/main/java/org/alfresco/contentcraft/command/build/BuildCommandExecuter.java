@@ -6,10 +6,17 @@ package org.alfresco.contentcraft.command.build;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.server.v1_7_R4.ItemStack;
+import net.minecraft.server.v1_7_R4.Items;
+import net.minecraft.server.v1_7_R4.NBTTagCompound;
+import net.minecraft.server.v1_7_R4.NBTTagList;
+import net.minecraft.server.v1_7_R4.NBTTagString;
+
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,9 +30,6 @@ import org.bukkit.util.Vector;
  */
 public class BuildCommandExecuter extends BaseCommandExecuter
 {
-	/** player */
-	protected Player player;
-	
 	/** map of builder */
 	private Map<String, Builder> builders = new HashMap<String, Builder>();
 	
@@ -63,16 +67,26 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 			throw new CommandUsageException("I don't know how to build a " + what + "!");
 		}
 		
-		// stash the the player
-		player = (Player)sender;
+		System.out.println(sender.getClass().getName());
 		
-		// get the start location for the build (3 blocks in the direction the player is facing)
-		Location location = player.getLocation();		
-		Vector playerDirection = VectorUtil.round(location.getDirection());
+		Location location = null;
+		if (sender instanceof Player)
+		{
+			location = ((Player)sender).getLocation();
+		}
+		else if (sender instanceof BlockCommandSender)
+		{
+			BlockCommandSender block = (BlockCommandSender)sender;
+			location = block.getBlock().getLocation();
+		}
 		
-		location.add(playerDirection.clone().multiply(3));
+		// get the direction
+		Vector direction = VectorUtil.round(location.getDirection());
+		location.add(direction.clone().multiply(3));
 		
 		// execute the builder
-		builder.build(player, location, playerDirection, args);		
+		builder.build(location, direction, args);		
 	}
+	
+
 }

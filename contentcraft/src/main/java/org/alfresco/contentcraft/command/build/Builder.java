@@ -9,5 +9,5 @@ public interface Builder
 {
 	String getName();
 	
-	void build(Player player, Location start, Vector direction, String ... args) throws CommandUsageException;
+	void build(Location start, Vector direction, String ... args) throws CommandUsageException;
 }

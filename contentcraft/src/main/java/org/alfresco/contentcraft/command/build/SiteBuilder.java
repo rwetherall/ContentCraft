@@ -1,7 +1,9 @@
 package org.alfresco.contentcraft.command.build;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +17,19 @@ import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.util.Vector;
 
 /**
@@ -78,7 +85,7 @@ public class SiteBuilder implements Builder
 	/**
 	 * @see org.alfresco.contentcraft.command.build.Builder#build(org.bukkit.entity.Player, org.bukkit.Location, org.bukkit.util.Vector, java.lang.String[])
 	 */
-	public void build(Player player, Location start, Vector direction, String... args) throws CommandUsageException
+	public void build(Location start, Vector direction, String... args) throws CommandUsageException
 	{
 		// get the site we want to use as a base
 		String siteName = args[1];
@@ -134,8 +141,6 @@ public class SiteBuilder implements Builder
 		Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
 		Macro folderEndMacro = getMacroCommand().getMacro(SITE_FOLDER_BACK);
 		Macro folderPlatformMacro = getMacroCommand().getMacro(SITE_FOLDER_PLATFORM);
-		Macro subFolderLeft = getMacroCommand().getMacro(SITE_SUBFOLDER_LEFT);
-		Macro subFolderRight = getMacroCommand().getMacro(SITE_SUBFOLDER_RIGHT);
 		
 		Location startClone = start.clone();
 		
@@ -188,11 +193,15 @@ public class SiteBuilder implements Builder
 		Location middleClone = startClone.clone().add(VectorUtil.NORTH.clone().multiply(4));
 		for (int i = 0; i < folders.size(); i++) 
 		{
+			Folder folder1 = folders.get(i);
+			Folder folder2 = null;
+			
+			
 			String folder2Name = "";
 			String folder2CreatedBy = "";
 			if (i+1 < folders.size())
 			{
-				Folder folder2 = folders.get(i+1);
+				folder2 = folders.get(i+1);
 				folder2Name = folder2.getName();
 				folder2CreatedBy = "Created By     " + folder.getPropertyValue(PropertyIds.CREATED_BY);
 			}
@@ -226,19 +235,70 @@ public class SiteBuilder implements Builder
 					}
 				}					
 			});		
-			
-			
-			subFolderLeft.run(middleClone.clone().add(VectorUtil.WEST));
+						
+			buildSubFolder(folder1, middleClone, SubFolderOrinitation.LEFT);
 			i++;
 			if (i < folders.size())
 			{
-				subFolderRight.run(middleClone.clone().add(VectorUtil.EAST.clone().multiply(10)));
+				buildSubFolder(folder2, middleClone, SubFolderOrinitation.RIGHT);
 			}
 			middleClone.add(VectorUtil.NORTH.clone().multiply(8));
 		}
 		
 		// build the end section
 		folderEndMacro.run(middleClone);
+	}
+	
+	private enum SubFolderOrinitation
+	{
+		LEFT,
+		RIGHT
+	}
+	
+	private List<Chest> chests;
+	
+	private void buildSubFolder(Folder folder, Location start, SubFolderOrinitation folderOrinitation)
+	{
+		Macro macro = null;
+		Location subFolderStart = null;
+		if (SubFolderOrinitation.LEFT.equals(folderOrinitation))
+		{
+			macro = getMacroCommand().getMacro(SITE_SUBFOLDER_LEFT);		
+			subFolderStart = start.clone().add(VectorUtil.WEST);
+		}
+		else
+		{
+			macro = getMacroCommand().getMacro(SITE_SUBFOLDER_RIGHT);	
+			subFolderStart = start.clone().add(VectorUtil.EAST.clone().multiply(10));
+		}
+		
+		chests = new ArrayList<Chest>();		
+		macro.run(subFolderStart, new MacroCallback() 
+		{
+			/**
+			 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
+			 */
+			public void callback(String macroAction, Block block) 
+			{
+				if (Material.CHEST.equals(block.getType()))
+				{
+					chests.add((Chest)(block.getState()));
+				}				
+			}					
+		});	
+		
+		// TODO get the next chest with room
+		Chest chest = chests.get(0);
+		
+		int i = 0;
+		for (CmisObject cmisObject : folder.getChildren())
+		{
+			if (cmisObject instanceof Document)
+			{
+				chest.getInventory().setItem(i, getBook((Document)cmisObject));
+				i++;
+			}			
+		}
 	}
 	
 	/**
@@ -273,45 +333,68 @@ public class SiteBuilder implements Builder
 		}
 	}
 	
-	// NOTES
+	public ItemStack getBook(Document document)
+    {	
+		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+		
+		BookMeta bookMeta = (BookMeta)book.getItemMeta();
+		
+		bookMeta.setTitle(document.getName());
+		bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));
+		
+		String content = getContentAsString(document);	
+		String trucatedContent = content.substring(0, 260);
+		
+		bookMeta.setPages(trucatedContent);
+		
+		book.setItemMeta(bookMeta);
+		
+		return book;
+    }
 	
-	// chest .. Block->Chest.getInventry()
-	
-	// get information from a book
-	
-//	NBTTagCompound bookData = ((CraftItemStack) bookItem).getHandle().tag;
-//    
-//    this.author = bookData.getString("author");
-//    this.title = bookData.getString("title");
-//            
-//    NBTTagList nPages = bookData.getList("pages");
-//
-//    String[] sPages = new String[nPages.size()];
-//    for(int i = 0;i<nPages.size();i++)
-//    {
-//        sPages[i] = nPages.get(i).toString();
-//    }
-            
+	/**
+	 * Helper method to get the contents of a stream
+	 * 
+	 * @param stream
+	 * @return
+	 * @throws IOException
+	 */
+	private String getContentAsString(Document document)
+	{
+	    StringBuilder sb = new StringBuilder();
+		ContentStream stream = document.getContentStream();
+		
+		try
+		{
+		    Reader reader = new InputStreamReader(stream.getStream(), "UTF-8");	
+		    try 
+		    {
+		        final char[] buffer = new char[4 * 1024];
+		        int b;
+		        while (true) 
+		        {
+		            b = reader.read(buffer, 0, buffer.length);
+		            if (b > 0) 
+		            {
+		                sb.append(buffer, 0, b);
+		            } 
+		            else if (b == -1) 
+		            {
+		                break;
+		            }
+		        }
+		    } 
+		    finally 
+		    {
+		        reader.close();
+		    }
+		}
+		catch (IOException exception)
+		{
+			System.out.println("Unable to read content.  " + exception.getMessage());
+		}
 
-	// create a new book
-	
-//    CraftItemStack newbook = new CraftItemStack(Material.WRITTEN_BOOK);
-//    
-//    NBTTagCompound newBookData = new NBTTagCompound();
-//    
-//    newBookData.setString("author",author);
-//    newBookData.setString("title",title);
-//            
-//    NBTTagList nPages = new NBTTagList();
-//    for(int i = 0;i<pages.length;i++)
-//    {  
-//        nPages.add(new NBTTagString(pages[i],pages[i]));
-//    }
-//    
-//    newBookData.set("pages", nPages);
-//
-//    newbook.getHandle().tag = newBookData;
-//    
-//    return (ItemStack) newbook;
+	    return sb.toString();
+	}
 	
 }

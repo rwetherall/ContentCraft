@@ -30,7 +30,7 @@ public abstract class BaseCommandExecuter implements CommandExecutor
 	
 	protected boolean isPlayerCommand()
 	{
-		return true;
+		return false;
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
