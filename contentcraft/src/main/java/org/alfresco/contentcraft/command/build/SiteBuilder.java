@@ -27,7 +27,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.util.Vector;
@@ -342,11 +341,26 @@ public class SiteBuilder implements Builder
 		bookMeta.setTitle(document.getName());
 		bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));
 		
-		String content = getContentAsString(document);	
-		String trucatedContent = content.substring(0, 260);
+		String content = getContentAsString(document); //.replace("\r", "");	
 		
-		bookMeta.setPages(trucatedContent);
+		List<String> pages = new ArrayList<String>();
+		pages.add(content.substring(0, 265));
 		
+		//String rest = content;		
+		//while (rest.length() > 266) 
+		//{
+		//	pages.add(content.substring(0, 265));
+		//	rest = content.substring(265);
+		//	
+		//	System.out.println(rest);
+		//}
+		
+		//if (!rest.isEmpty())
+		//{
+		//	pages.add(rest);
+		//}
+		
+		bookMeta.setPages(pages);		
 		book.setItemMeta(bookMeta);
 		
 		return book;

@@ -6,12 +6,6 @@ package org.alfresco.contentcraft.command.build;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_7_R4.ItemStack;
-import net.minecraft.server.v1_7_R4.Items;
-import net.minecraft.server.v1_7_R4.NBTTagCompound;
-import net.minecraft.server.v1_7_R4.NBTTagList;
-import net.minecraft.server.v1_7_R4.NBTTagString;
-
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
 import org.alfresco.contentcraft.util.VectorUtil;
@@ -66,8 +60,6 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 		{
 			throw new CommandUsageException("I don't know how to build a " + what + "!");
 		}
-		
-		System.out.println(sender.getClass().getName());
 		
 		Location location = null;
 		if (sender instanceof Player)
