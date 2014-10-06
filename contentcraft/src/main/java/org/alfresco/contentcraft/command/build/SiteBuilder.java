@@ -54,6 +54,9 @@ public class SiteBuilder implements Builder
 	/** macro command */
 	private MacroCommandExecuter macroCommand;
 	
+	/** chests */
+	private List<Chest> chests;
+	
 	/**
 	 * @return	{@link MacroCommandExecuter}	macro command executer
 	 */
@@ -248,14 +251,22 @@ public class SiteBuilder implements Builder
 		folderEndMacro.run(middleClone);
 	}
 	
+	/**
+	 * Sub folder orinitation enum
+	 */
 	private enum SubFolderOrinitation
 	{
 		LEFT,
 		RIGHT
-	}
+	}	
 	
-	private List<Chest> chests;
-	
+	/**
+	 * Helper method to build a sub folder
+	 * 
+	 * @param folder
+	 * @param start
+	 * @param folderOrinitation
+	 */
 	private void buildSubFolder(Folder folder, Location start, SubFolderOrinitation folderOrinitation)
 	{
 		Macro macro = null;
@@ -312,27 +323,52 @@ public class SiteBuilder implements Builder
 		if (message != null && !message.isEmpty())
 		{
 			org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(block.getState());	
-			
-			for (int line = 0; line < NUMBER_OF_LINES; line++) 
+	
+			List<String> messages = split(message, NUMBER_OF_LINES, LINE_LEN);
+			for (int index = 0; index < messages.size(); index++)
 			{
-				int startIndex = line * LINE_LEN;
-				int endIndex = (line + 1) * LINE_LEN;
-				if (endIndex < message.length())
-				{		
-					sign.setLine(line, message.substring(startIndex, endIndex));
-				}
-				else 
-				{
-					sign.setLine(line,  message.substring(startIndex));
-					break;
-				}
+				sign.setLine(index, messages.get(index));
 			}
 			
 			sign.update();
 		}
 	}
 	
-	public ItemStack getBook(Document document)
+	/**
+	 * Helper method to split a string by pages and page size
+	 * 
+	 * @param message
+	 * @param maxPages
+	 * @param pageSize
+	 * @return
+	 */
+	private List<String> split(String message, int maxPages, int pageSize)
+	{
+		List<String> result = new ArrayList<String>(maxPages);
+		for (int page = 0; page < maxPages; page++) 
+		{
+			int startIndex = page * pageSize;
+			int endIndex = (page + 1) * pageSize;
+			if (endIndex < message.length())
+			{		
+				result.add(message.substring(startIndex, endIndex));
+			}
+			else 
+			{
+				result.add(message.substring(startIndex));
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Get book
+	 * 
+	 * @param document
+	 * @return
+	 */
+	private ItemStack getBook(Document document)
     {	
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
 		
@@ -341,24 +377,10 @@ public class SiteBuilder implements Builder
 		bookMeta.setTitle(document.getName());
 		bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));
 		
-		String content = getContentAsString(document); //.replace("\r", "");	
+		String content = getContentAsString(document);	
 		
 		List<String> pages = new ArrayList<String>();
 		pages.add(content.substring(0, 265));
-		
-		//String rest = content;		
-		//while (rest.length() > 266) 
-		//{
-		//	pages.add(content.substring(0, 265));
-		//	rest = content.substring(265);
-		//	
-		//	System.out.println(rest);
-		//}
-		
-		//if (!rest.isEmpty())
-		//{
-		//	pages.add(rest);
-		//}
 		
 		bookMeta.setPages(pages);		
 		book.setItemMeta(bookMeta);
