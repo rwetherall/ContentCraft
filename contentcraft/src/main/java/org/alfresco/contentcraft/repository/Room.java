@@ -114,9 +114,9 @@ public class Room implements Buildable
         
         BookMeta bookMeta = (BookMeta)book.getItemMeta();
         
-        bookMeta.setTitle(document.getName());
+        bookMeta.setLore(Collections.singletonList(document.getName()));
         bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));        
-        bookMeta.setLore(Collections.singletonList(document.getId()));
+        bookMeta.setTitle(document.getId());
         
         String content = getContentAsString(document);  
         List<String> pages = CommonUtil.split(content, 16, 265);

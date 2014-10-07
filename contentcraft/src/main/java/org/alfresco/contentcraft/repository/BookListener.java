@@ -19,8 +19,8 @@ public class BookListener implements Listener
         List<String> lore = playerEditBookEvent.getNewBookMeta().getLore();
         if (!lore.isEmpty())
         {
-            String name = playerEditBookEvent.getNewBookMeta().getTitle();
-            String id = lore.get(0);
+            String id = playerEditBookEvent.getNewBookMeta().getTitle();
+            String name = lore.get(0);
             Document document = (Document)CMIS.getSession().getObject(id);
             List<String> pages = playerEditBookEvent.getNewBookMeta().getPages();
             
