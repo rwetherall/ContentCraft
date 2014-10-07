@@ -91,8 +91,6 @@ public class Macro
 	
 	public void run(Location location, MacroCallback callback)
 	{
-		//System.out.println("Running macro: " + getName() + " at location " + location.toString());
-		
 		for (MacroAction action : actions) 
 		{
 			action.execute(location, callback);

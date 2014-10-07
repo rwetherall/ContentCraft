@@ -1,34 +1,27 @@
 package org.alfresco.contentcraft.command.build;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.alfresco.cmis.client.AlfrescoFolder;
-import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.command.CommandUsageException;
-import org.alfresco.contentcraft.command.macro.Macro;
 import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
+import org.alfresco.contentcraft.repository.Room;
+import org.alfresco.contentcraft.repository.RoomType;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.util.Vector;
 
 /**
@@ -44,36 +37,28 @@ public class SiteBuilder implements Builder
 	private static final String SITE_FOLDER_MIDDLE = "site.folder.middle";
 	private static final String SITE_FOLDER_BACK = "site.folder.back";
 	private static final String SITE_FOLDER_PLATFORM = "site.folder.platform";
-	private static final String SITE_SUBFOLDER_LEFT = "site.subfolder.left";
-	private static final String SITE_SUBFOLDER_RIGHT = "site.subfolder.right";
 	
 	/** sign values */
 	private static final int NUMBER_OF_LINES = 4;
 	private static final int LINE_LEN = 15;
 	
-	/** macro command */
-	private MacroCommandExecuter macroCommand;
-	
-	/** chests */
-	private List<Chest> chests;
+	// TODO find a better solution
+	private boolean macrosLoaded = false;
 	
 	/**
 	 * @return	{@link MacroCommandExecuter}	macro command executer
 	 */
-	private MacroCommandExecuter getMacroCommand()
+	private void loadMacros()
 	{
-		if (macroCommand == null)
-		{
-			// get the macro command
-			macroCommand = (MacroCommandExecuter)ContentCraftPlugin.getPlugin().getCommand("macro").getExecutor();
-			
-			// load the site builder macros
-			InputStream is = getClass().getClassLoader().getResourceAsStream("site-builder.json");
-			InputStreamReader reader = new InputStreamReader(is);
-			macroCommand.load(reader);
-		}
-		
-		return macroCommand;
+	    if (macrosLoaded == false)
+	    {
+	        // load the site builder macros
+	        InputStream is = getClass().getClassLoader().getResourceAsStream("site-builder.json");
+	        InputStreamReader reader = new InputStreamReader(is);
+	        MacroCommandExecuter.getInstance().load(reader);
+	        
+	        macrosLoaded = true;
+	    }
 	}
 	
 	/**
@@ -95,6 +80,9 @@ public class SiteBuilder implements Builder
 		{
 			throw new CommandUsageException("You didn't provide a site name!");
 		}
+		
+		/// load the macros
+		loadMacros();
 		
 		// grab the document lib for the site
 		Session session = CMIS.connect();
@@ -139,10 +127,10 @@ public class SiteBuilder implements Builder
 	 */
 	private void buildRootFolder(Location start, AlfrescoFolder folder)
 	{				
-		Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
-		Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
-		Macro folderEndMacro = getMacroCommand().getMacro(SITE_FOLDER_BACK);
-		Macro folderPlatformMacro = getMacroCommand().getMacro(SITE_FOLDER_PLATFORM);
+		//Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
+		//Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
+	//	Macro folderEndMacro = getMacroCommand().getMacro(SITE_FOLDER_BACK);
+		//Macro folderPlatformMacro = getMacroCommand().getMacro(SITE_FOLDER_PLATFORM);
 		
 		Location startClone = start.clone();
 		
@@ -153,7 +141,7 @@ public class SiteBuilder implements Builder
 		};
 		
 		// execute the folder front macro
-		folderFrontMacro.run(startClone, new MacroCallback() 
+		MacroCommandExecuter.run(SITE_FOLDER_FRONT, startClone, new MacroCallback() 
 		{
 			/** sign count */
 			int signCount = 0;
@@ -177,7 +165,7 @@ public class SiteBuilder implements Builder
 		
 		// build the folder platform
 		Location platformStart = startClone.clone().add(VectorUtil.SOUTH.clone().multiply(2));
-		folderPlatformMacro.run(platformStart);
+		MacroCommandExecuter.run(SITE_FOLDER_PLATFORM, platformStart);
 		
 		// grab all sub-folders
 		List<Folder> folders = new ArrayList<Folder>(21);
@@ -216,7 +204,7 @@ public class SiteBuilder implements Builder
 				folder2CreatedBy
 			};
 			
-			folderMiddleMacro.run(middleClone, new MacroCallback() 
+			MacroCommandExecuter.run(SITE_FOLDER_MIDDLE, middleClone, new MacroCallback() 
 			{
 				/** sign count */
 				int signCount = 0;
@@ -238,81 +226,24 @@ public class SiteBuilder implements Builder
 				}					
 			});		
 						
-			buildSubFolder(folder1, middleClone, SubFolderOrinitation.LEFT);
+			//buildSubFolder(folder1, middleClone, SubFolderOrinitation.LEFT);
+			new Room(folder1, middleClone, RoomType.ROOM_LEFT).build();
 			i++;
 			if (i < folders.size())
 			{
-				buildSubFolder(folder2, middleClone, SubFolderOrinitation.RIGHT);
+				//buildSubFolder(folder2, middleClone, SubFolderOrinitation.RIGHT);
+	            new Room(folder2, middleClone, RoomType.ROOM_RIGHT).build();
 			}
 			middleClone.add(VectorUtil.NORTH.clone().multiply(8));
 		}
 		
 		// build the end section
-		folderEndMacro.run(middleClone);
+		MacroCommandExecuter.run(SITE_FOLDER_BACK, middleClone);
 	}
+
 	
 	/**
-	 * Sub folder orinitation enum
-	 */
-	private enum SubFolderOrinitation
-	{
-		LEFT,
-		RIGHT
-	}	
-	
-	/**
-	 * Helper method to build a sub folder
-	 * 
-	 * @param folder
-	 * @param start
-	 * @param folderOrinitation
-	 */
-	private void buildSubFolder(Folder folder, Location start, SubFolderOrinitation folderOrinitation)
-	{
-		Macro macro = null;
-		Location subFolderStart = null;
-		if (SubFolderOrinitation.LEFT.equals(folderOrinitation))
-		{
-			macro = getMacroCommand().getMacro(SITE_SUBFOLDER_LEFT);		
-			subFolderStart = start.clone().add(VectorUtil.WEST);
-		}
-		else
-		{
-			macro = getMacroCommand().getMacro(SITE_SUBFOLDER_RIGHT);	
-			subFolderStart = start.clone().add(VectorUtil.EAST.clone().multiply(10));
-		}
-		
-		chests = new ArrayList<Chest>();		
-		macro.run(subFolderStart, new MacroCallback() 
-		{
-			/**
-			 * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
-			 */
-			public void callback(String macroAction, Block block) 
-			{
-				if (Material.CHEST.equals(block.getType()))
-				{
-					chests.add((Chest)(block.getState()));
-				}				
-			}					
-		});	
-		
-		// TODO get the next chest with room
-		Chest chest = chests.get(0);
-		
-		int i = 0;
-		for (CmisObject cmisObject : folder.getChildren())
-		{
-			if (cmisObject instanceof Document)
-			{
-				chest.getInventory().setItem(i, getBook((Document)cmisObject));
-				i++;
-			}			
-		}
-	}
-	
-	/**
-	 * Divde the string over the four available lines on the given 
+	 * Divide the string over the four available lines on the given 
 	 * sign.
 	 * 
 	 * @param block		sign block
@@ -361,76 +292,4 @@ public class SiteBuilder implements Builder
 		}
 		return result;
 	}
-
-	/**
-	 * Get book
-	 * 
-	 * @param document
-	 * @return
-	 */
-	private ItemStack getBook(Document document)
-    {	
-		ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-		
-		BookMeta bookMeta = (BookMeta)book.getItemMeta();
-		
-		bookMeta.setTitle(document.getName());
-		bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));
-		
-		String content = getContentAsString(document);	
-		
-		List<String> pages = new ArrayList<String>();
-		pages.add(content.substring(0, 265));
-		
-		bookMeta.setPages(pages);		
-		book.setItemMeta(bookMeta);
-		
-		return book;
-    }
-	
-	/**
-	 * Helper method to get the contents of a stream
-	 * 
-	 * @param stream
-	 * @return
-	 * @throws IOException
-	 */
-	private String getContentAsString(Document document)
-	{
-	    StringBuilder sb = new StringBuilder();
-		ContentStream stream = document.getContentStream();
-		
-		try
-		{
-		    Reader reader = new InputStreamReader(stream.getStream(), "UTF-8");	
-		    try 
-		    {
-		        final char[] buffer = new char[4 * 1024];
-		        int b;
-		        while (true) 
-		        {
-		            b = reader.read(buffer, 0, buffer.length);
-		            if (b > 0) 
-		            {
-		                sb.append(buffer, 0, b);
-		            } 
-		            else if (b == -1) 
-		            {
-		                break;
-		            }
-		        }
-		    } 
-		    finally 
-		    {
-		        reader.close();
-		    }
-		}
-		catch (IOException exception)
-		{
-			System.out.println("Unable to read content.  " + exception.getMessage());
-		}
-
-	    return sb.toString();
-	}
-	
 }

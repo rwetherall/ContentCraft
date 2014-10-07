@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.command.BaseCommandExecuter;
 import org.alfresco.contentcraft.command.CommandUsageException;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -45,6 +47,49 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 	/** currently recording macro */
 	private Macro recordingMacro;
 	
+	private static MacroCommandExecuter instance;
+	
+	public static MacroCommandExecuter getInstance()
+	{
+	    if (instance == null)
+	    {
+	        // get the macro command
+	        instance = (MacroCommandExecuter)ContentCraftPlugin.getPlugin().getCommand("macro").getExecutor();
+	    }
+	    
+	    return instance;
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @param location
+	 */
+	public static void run(String name, Location location)
+	{
+	    MacroCommandExecuter.run(name, location, null);
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @param location
+	 * @param callback
+	 */
+	public static void run(String name, Location location, MacroCallback callback)
+    {
+	    MacroCommandExecuter macroCommandExecuter = MacroCommandExecuter.getInstance();
+	    
+	    Macro macro = macroCommandExecuter.getMacro(name);
+	    if (macro == null)
+	    {
+	        throw new RuntimeException("Can not find macro " + name);
+	        
+	    }
+	    
+	    macro.run(location, callback);
+    }
+	
 	/**
 	 * Constructor.
 	 * 
@@ -56,6 +101,12 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 		super(name, properties);
 	}
 	
+	/**
+	 * Get macro by name
+	 * 
+	 * @param  name            macro name
+	 * @return {@link Macro}   macro object
+	 */
 	public Macro getMacro(String name)
 	{
 		return macros.get(name);
@@ -144,6 +195,9 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 		}
 	}
 	
+	/**
+	 * On block break event handler
+	 */
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event)
 	{
@@ -153,6 +207,9 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 		}		
 	}
 	
+	/**
+	 * On block place event handler
+	 */
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event)
 	{

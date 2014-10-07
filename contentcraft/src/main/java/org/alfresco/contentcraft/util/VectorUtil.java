@@ -7,6 +7,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
 /**
+ * Vector Util Class
+ * 
  * @author Roy Wetherall
  */
 public class VectorUtil 
