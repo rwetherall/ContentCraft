@@ -32,6 +32,8 @@ public class CMIS
 	private static String USER; // = "admin";
 	private static String PASSWORD; // = "admin";
 	
+	private static Session session;
+	
 	private static void init()
 	{
 		try
@@ -54,31 +56,36 @@ public class CMIS
 
 	}
 	
-	public static Session connect() 
+	public static Session getSession() 
 	{
-		if (isInit == false)
-		{
-			System.out.println("Init connection details.");
-			CMIS.init();
-			isInit = true;
-		}
-		
-		SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
-		Map<String, String> parameter = new HashMap<String, String>();
-		parameter.put(SessionParameter.USER, USER);
-		parameter.put(SessionParameter.PASSWORD, PASSWORD);
-		parameter.put(SessionParameter.ATOMPUB_URL, ALFRSCO_ATOMPUB_URL);
-		parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-		parameter.put(SessionParameter.REPOSITORY_ID, REPOSITORY_ID);
-		parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
-		
-		return sessionFactory.createSession(parameter);
+	    if (session == null)
+	    {
+    		if (isInit == false)
+    		{
+    			System.out.println("Init connection details.");
+    			CMIS.init();
+    			isInit = true;
+    		}
+    		
+    		SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
+    		Map<String, String> parameter = new HashMap<String, String>();
+    		parameter.put(SessionParameter.USER, USER);
+    		parameter.put(SessionParameter.PASSWORD, PASSWORD);
+    		parameter.put(SessionParameter.ATOMPUB_URL, ALFRSCO_ATOMPUB_URL);
+    		parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+    		parameter.put(SessionParameter.REPOSITORY_ID, REPOSITORY_ID);
+    		parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
+    		
+    		session = sessionFactory.createSession(parameter);
+	    }
+	    
+	    return session;
 	}
 	
 	public static String testConnect()
 	{
 		String result = "Unable to connect to " + ALFRSCO_ATOMPUB_URL;
-		Session session = CMIS.connect();		
+		Session session = CMIS.getSession();		
 		Folder rootFolder = session.getRootFolder();
 		if (rootFolder != null)
 		{

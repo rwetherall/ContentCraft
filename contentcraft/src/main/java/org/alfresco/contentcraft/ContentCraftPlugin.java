@@ -6,6 +6,7 @@ package org.alfresco.contentcraft;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
+import org.alfresco.contentcraft.repository.BookListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -68,6 +69,11 @@ public class ContentCraftPlugin extends JavaPlugin
 				} 
 			}
 		}
+		
+		// TODO do better
+		// register the book listner
+		BookListener bookListener = new BookListener();
+		getServer().getPluginManager().registerEvents((Listener)bookListener, this);
 	}
 	
 	/**

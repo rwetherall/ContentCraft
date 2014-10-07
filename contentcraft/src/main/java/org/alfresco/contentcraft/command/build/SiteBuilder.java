@@ -13,6 +13,7 @@ import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.repository.Room;
 import org.alfresco.contentcraft.repository.RoomType;
+import org.alfresco.contentcraft.util.CommonUtil;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -85,7 +86,7 @@ public class SiteBuilder implements Builder
 		loadMacros();
 		
 		// grab the document lib for the site
-		Session session = CMIS.connect();
+		Session session = CMIS.getSession();
 		AlfrescoFolder siteRoot = CMIS.getSiteRoot(session, siteName);
 		if (siteRoot == null)
 		{
@@ -127,11 +128,6 @@ public class SiteBuilder implements Builder
 	 */
 	private void buildRootFolder(Location start, AlfrescoFolder folder)
 	{				
-		//Macro folderFrontMacro = getMacroCommand().getMacro(SITE_FOLDER_FRONT);
-		//Macro folderMiddleMacro = getMacroCommand().getMacro(SITE_FOLDER_MIDDLE);
-	//	Macro folderEndMacro = getMacroCommand().getMacro(SITE_FOLDER_BACK);
-		//Macro folderPlatformMacro = getMacroCommand().getMacro(SITE_FOLDER_PLATFORM);
-		
 		Location startClone = start.clone();
 		
 		final String[] messages = 
@@ -255,7 +251,7 @@ public class SiteBuilder implements Builder
 		{
 			org.bukkit.block.Sign sign = (org.bukkit.block.Sign)(block.getState());	
 	
-			List<String> messages = split(message, NUMBER_OF_LINES, LINE_LEN);
+			List<String> messages = CommonUtil.split(message, NUMBER_OF_LINES, LINE_LEN);
 			for (int index = 0; index < messages.size(); index++)
 			{
 				sign.setLine(index, messages.get(index));
@@ -265,31 +261,5 @@ public class SiteBuilder implements Builder
 		}
 	}
 	
-	/**
-	 * Helper method to split a string by pages and page size
-	 * 
-	 * @param message
-	 * @param maxPages
-	 * @param pageSize
-	 * @return
-	 */
-	private List<String> split(String message, int maxPages, int pageSize)
-	{
-		List<String> result = new ArrayList<String>(maxPages);
-		for (int page = 0; page < maxPages; page++) 
-		{
-			int startIndex = page * pageSize;
-			int endIndex = (page + 1) * pageSize;
-			if (endIndex < message.length())
-			{		
-				result.add(message.substring(startIndex, endIndex));
-			}
-			else 
-			{
-				result.add(message.substring(startIndex));
-				break;
-			}
-		}
-		return result;
-	}
+	
 }

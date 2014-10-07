@@ -17,7 +17,7 @@ public class CMISUnitTest
 	@Test
 	public void getDocumentLibFolderForASite()
 	{
-		Session session = CMIS.connect();
+		Session session = CMIS.getSession();
 		
 		Folder rootFolder = session.getRootFolder();
 		System.out.println(rootFolder.getPath());		

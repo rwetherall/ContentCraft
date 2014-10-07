@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.alfresco.contentcraft.command.macro.Macro;
 import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
+import org.alfresco.contentcraft.util.CommonUtil;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -77,9 +79,6 @@ public class Room implements Buildable
         chests = new ArrayList<Chest>();        
         macro.run(subFolderStart, new MacroCallback() 
         {
-            /**
-             * @see org.alfresco.contentcraft.command.macro.MacroCallback#placeBlock(org.bukkit.block.Block)
-             */
             public void callback(String macroAction, Block block) 
             {
                 if (Material.CHEST.equals(block.getType()))
@@ -111,18 +110,16 @@ public class Room implements Buildable
      */
     private ItemStack getBook(Document document)
     {   
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        ItemStack book = new ItemStack(Material.BOOK_AND_QUILL);
         
         BookMeta bookMeta = (BookMeta)book.getItemMeta();
         
         bookMeta.setTitle(document.getName());
-        bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));
+        bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));        
+        bookMeta.setLore(Collections.singletonList(document.getId()));
         
         String content = getContentAsString(document);  
-        
-        List<String> pages = new ArrayList<String>();
-        pages.add(content.substring(0, 265));
-        
+        List<String> pages = CommonUtil.split(content, 16, 265);
         bookMeta.setPages(pages);   
         
         book.setItemMeta(bookMeta);
