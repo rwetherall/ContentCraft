@@ -140,6 +140,13 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 				recordingMacro = null;
 				save();
 			}
+			else
+			{
+			    for (Macro macro : macros.values())
+                {
+                    macro.stop();
+                }
+			}
 		}
 		else
 		{
