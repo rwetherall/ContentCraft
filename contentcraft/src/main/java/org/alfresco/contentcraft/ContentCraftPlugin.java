@@ -4,6 +4,8 @@
 package org.alfresco.contentcraft;
 
 import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Map;
 
 import org.alfresco.contentcraft.repository.BookListener;
@@ -12,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.alfresco.contentcraft.events.listener.DocumentListener;
 /**
  * Content craft plugin implementation
  * 
@@ -20,6 +23,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ContentCraftPlugin extends JavaPlugin 
 {
 	private static ContentCraftPlugin plugin;
+
+	public static Logger logger;
 	
 	public static ContentCraftPlugin getPlugin()
 	{
@@ -32,7 +37,7 @@ public class ContentCraftPlugin extends JavaPlugin
 	@Override
 	public void onEnable() 
 	{
-		getLogger().info("onEnable had been invoked");
+		ContentCraftPlugin.logger.info("onEnable had been invoked");
 		ContentCraftPlugin.plugin = this;
 		
 		// get the plugin description file
@@ -40,34 +45,43 @@ public class ContentCraftPlugin extends JavaPlugin
 		
 		// get the command information map
 		Map<String, Map<String, Object>> commands = descriptionFile.getCommands();
-		for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
-		{
-			// look for the executor class
-			String className = (String)entry.getValue().get("executor");
-			if (className != null)
+		if (commands != null) {
+			for (Map.Entry<String, Map<String, Object>> entry : commands.entrySet()) 
 			{
-				try
+				// look for the executor class
+				String className = (String)entry.getValue().get("executor");
+				if (className != null)
 				{
-					// create an instance of the the executor class
-					Class<?> clazz = Class.forName(className);
-					Constructor<?> ctor = clazz.getConstructor(String.class, Map.class);
-					CommandExecutor commandExecutor = (CommandExecutor)ctor.newInstance(entry.getKey(), entry.getValue());
-					
-					// set the command executor
-					getCommand(entry.getKey()).setExecutor(commandExecutor);
-					
-					// if the command is a listener
-					if (commandExecutor instanceof Listener)
+					try
 					{
-						// register events
-						getServer().getPluginManager().registerEvents((Listener)commandExecutor, this);
+						// create an instance of the the executor class
+						ContentCraftPlugin.logger.info("Class name is: " + className);
+						Class<?> clazz = Class.forName(className);
+						Constructor<?> ctor = clazz.getConstructor(String.class, Map.class);
+						CommandExecutor commandExecutor = (CommandExecutor)ctor.newInstance(entry.getKey(), entry.getValue());
+						
+						// set the command executor
+						getCommand(entry.getKey()).setExecutor(commandExecutor);
+ 		         ContentCraftPlugin.logger.info("Command is: " + commandExecutor);
+						
+						// if the command is a listener
+						if (commandExecutor instanceof Listener)
+						{
+							// register events
+							getServer().getPluginManager().registerEvents((Listener)commandExecutor, this);
+		          ContentCraftPlugin.logger.info("Command registered");
+						}
 					}
+					catch (Exception exception)
+					{
+						exception.printStackTrace();
+					} 
+				} else {
+					ContentCraftPlugin.logger.info("we got no class");
 				}
-				catch (Exception exception)
-				{
-					exception.printStackTrace();
-				} 
 			}
+		} else {
+			ContentCraftPlugin.logger.info("Where are the commands?");
 		}
 		
 		// TODO do better
@@ -82,7 +96,13 @@ public class ContentCraftPlugin extends JavaPlugin
 	@Override
 	public void onDisable() 
 	{
-		getLogger().info("onDisable has been invoked");
+		ContentCraftPlugin.logger.info("onDisable has been invoked");
+	}
+
+	@Override
+	public void onLoad()
+	{
+		logger = getLogger();
 	}
 	
 }

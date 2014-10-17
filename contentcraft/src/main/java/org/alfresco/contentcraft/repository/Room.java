@@ -118,57 +118,13 @@ public class Room implements Buildable
         bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));        
         bookMeta.setTitle(document.getId());
         
-        String content = getContentAsString(document);  
-        List<String> pages = CommonUtil.split(content, 16, 265);
-        bookMeta.setPages(pages);   
+//        String content = CommonUtil.getContentAsString(document.getContentStream());  
+ //       List<String> pages = CommonUtil.split(content, 16, 265);
+  //      bookMeta.setPages(pages);   
         
         book.setItemMeta(bookMeta);
         return book;
     }
     
-    /**
-     * Helper method to get the contents of a stream
-     * 
-     * @param stream
-     * @return
-     * @throws IOException
-     */
-    private String getContentAsString(Document document)
-    {
-        StringBuilder sb = new StringBuilder();
-        ContentStream stream = document.getContentStream();
-        
-        try
-        {
-            Reader reader = new InputStreamReader(stream.getStream(), "UTF-8"); 
-            try 
-            {
-                final char[] buffer = new char[4 * 1024];
-                int b;
-                while (true) 
-                {
-                    b = reader.read(buffer, 0, buffer.length);
-                    if (b > 0) 
-                    {
-                        sb.append(buffer, 0, b);
-                    } 
-                    else if (b == -1) 
-                    {
-                        break;
-                    }
-                }
-            } 
-            finally 
-            {
-                reader.close();
-            }
-        }
-        catch (IOException exception)
-        {
-            System.out.println("Unable to read content.  " + exception.getMessage());
-        }
-
-        return sb.toString();
-    }
 
 }
