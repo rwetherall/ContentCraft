@@ -1,8 +1,10 @@
 package org.alfresco.contentcraft.command.macro;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -59,6 +61,9 @@ public class Macro
 		return name;
 	}
 	
+	/**
+	 * @return true if transient (ie not applicable for user to apply via command), false otherwise
+	 */
 	public boolean isTransient() 
 	{
 		return transientMacro;
@@ -176,11 +181,14 @@ public class Macro
 		JSONObject jsonMacro = new JSONObject();			
 		jsonMacro.put("name", getName());
 		
-		JSONArray jsonActions = new JSONArray();			
+		JSONArray jsonActions = new JSONArray();	
 		for (MacroAction action : getActions()) 
-		{
+		{		
 			jsonActions.add(action.toJSON());
 		}
+				
+		
+		
 		jsonMacro.put("actions", jsonActions);
 		return jsonMacro;
 	}

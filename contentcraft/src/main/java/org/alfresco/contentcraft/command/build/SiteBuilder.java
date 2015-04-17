@@ -1,5 +1,6 @@
 package org.alfresco.contentcraft.command.build;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -38,6 +39,18 @@ public class SiteBuilder implements Builder
 	private static final String SITE_FOLDER_MIDDLE = "site.folder.middle";
 	private static final String SITE_FOLDER_BACK = "site.folder.back";
 	private static final String SITE_FOLDER_PLATFORM = "site.folder.platform";
+	private static final String SITE_SUBFOLDER_RIGHT = "site.subfolder.right";
+	private static final String SITE_SUBFOLDER_LEFT = "site.subfolder.left";
+	
+	private static final String[] FILES = new String[]
+	{
+		SITE_FOLDER_BACK,
+		SITE_FOLDER_FRONT,
+		SITE_FOLDER_MIDDLE,
+		SITE_FOLDER_PLATFORM,
+		SITE_SUBFOLDER_LEFT,
+		SITE_SUBFOLDER_RIGHT
+	};
 	
 	/** sign values */
 	private static final int NUMBER_OF_LINES = 4;
@@ -53,12 +66,31 @@ public class SiteBuilder implements Builder
 	{
 	    if (macrosLoaded == false)
 	    {
-	        // load the site builder macros
-	        InputStream is = getClass().getClassLoader().getResourceAsStream("site-builder.json");
-	        InputStreamReader reader = new InputStreamReader(is);
-	        MacroCommandExecuter.getInstance().load(reader);
-	        
-	        macrosLoaded = true;
+	    	try
+	    	{
+	    		for (String file : FILES) 
+	    		{
+					InputStream is = getClass().getClassLoader().getResourceAsStream("macros/" + file + ".json");
+		    		try
+		    		{
+		    			InputStreamReader reader = new InputStreamReader(is);
+		    			MacroCommandExecuter.getInstance().load(reader);
+		    		}
+		    		finally
+		    		{
+		    			is.close();
+		    		}
+	    		}
+	    	}
+	    	catch (IOException exception)
+	    	{
+	    		// just hack the error out
+	    		exception.printStackTrace();
+	    	}
+	    	finally
+	    	{
+	    		macrosLoaded = true;
+	    	}
 	    }
 	}
 	

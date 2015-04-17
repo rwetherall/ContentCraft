@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.alfresco.contentcraft.ContentCraftPlugin;
@@ -21,7 +20,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -33,7 +31,7 @@ import org.json.simple.parser.JSONParser;
  */
 public class MacroCommandExecuter extends BaseCommandExecuter implements Listener
 {
-	private static final String MACRO_CONFIG_FILE = "./macros.json";
+	private static final String MACRO_FOLDER = "./macros";
 	
 	private static final String CMD_START = "start";
 	private static final String CMD_STOP = "stop";
@@ -238,33 +236,34 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 		save();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void save()
 	{		
 		try 
-		{
-			// generate JSON 
-			JSONArray jsonMacros = new JSONArray();
+		{			
+			File macroFolder = new File(MACRO_FOLDER);
+			if (!macroFolder.exists()) 
+			{
+				macroFolder.mkdir();
+			}
+						
 			for (Macro macro : macros.values()) 
 			{
 				if (!macro.isTransient())
-				{
-					jsonMacros.add(macro.toJSON());
+				{					
+					// write JSON to config file
+					File file = new File(MACRO_FOLDER + "/" + macro.getName() + ".json");
+		            FileWriter fileWriter = new FileWriter(file);
+		            try
+		            {
+		            	fileWriter.write(macro.toJSON().toJSONString());
+		            }
+		            finally
+		            {
+		            	// close file
+		            	fileWriter.close();
+		            }
 				}
-			}
-			
-			// write JSON to config file
-			File file = new File(MACRO_CONFIG_FILE);
-            FileWriter fileWriter = new FileWriter(file);
-            try
-            {
-            	fileWriter.write(jsonMacros.toJSONString());
-            }
-            finally
-            {
-            	// close file
-            	fileWriter.close();
-            }			
+			}			
 		} 
 		catch (IOException e) 
 		{
@@ -278,43 +277,41 @@ public class MacroCommandExecuter extends BaseCommandExecuter implements Listene
 	 */
 	private void load()
 	{
-		File file = new File(MACRO_CONFIG_FILE);
-		if (file.exists())
+		File macroFolder = new File(MACRO_FOLDER);
+		if (macroFolder.exists()) 
 		{
-			try
+			File[] files = macroFolder.listFiles();
+			for (File file : files) 
 			{
-				FileReader fileReader = new FileReader(file);
 				try
-				{					
-					load(fileReader);
-				}
-				finally
 				{
-					fileReader.close();
+					FileReader fileReader = new FileReader(file);
+					try
+					{					
+						load(fileReader);
+					}
+					finally
+					{
+						fileReader.close();
+					}
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
 				}
 			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}			
 		}
+	
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public void load(Reader reader)
 	{
 		try
 		{
 			JSONParser jsonParser = new JSONParser();
-			JSONArray jsonMacros = (JSONArray)jsonParser.parse(reader);
-			
-			Iterator it = jsonMacros.iterator();
-			while (it.hasNext()) 
-			{
-				JSONObject jsonMacro = (JSONObject)it.next();
-				Macro macro = Macro.fromJSON(jsonMacro);
-				macros.put(macro.getName(), macro);
-			}
+			JSONObject jsonMacro = (JSONObject)jsonParser.parse(reader);
+			Macro macro = Macro.fromJSON(jsonMacro);
+			macros.put(macro.getName(), macro);
 		}
 		catch (Exception e)
 		{
