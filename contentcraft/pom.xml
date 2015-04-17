@@ -61,9 +61,9 @@
           <dependency>
 			 <artifactId>spigot-api</artifactId>
 			 <groupId>org.spigotmc</groupId>
-			 <version>1.7.10-R0.1-SNAPSHOT</version>
+			 <version>1.8.3-R0.1-SNAPSHOT</version>
 			 <scope>system</scope>
-			 <systemPath>${basedir}/mc-server/spigot1649.jar</systemPath>
+			 <systemPath>${basedir}/mc-server/spigot-1.8.3-R0.1-SNAPSHOT-latest.jar</systemPath>
 		  </dependency>
 		  <dependency>
              <groupId>junit</groupId>
