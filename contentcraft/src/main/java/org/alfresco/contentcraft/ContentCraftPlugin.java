@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.springframework.context.ApplicationContext;
 /**
  * Content craft plugin implementation
  * 
@@ -20,8 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ContentCraftPlugin extends JavaPlugin 
 {
 	private static ContentCraftPlugin plugin;
-
+	
 	public static Logger logger;
+	public static ApplicationContext context;
 	
 	public static ContentCraftPlugin getPlugin()
 	{
@@ -88,7 +90,7 @@ public class ContentCraftPlugin extends JavaPlugin
 		
 		//Start Spring
 		AppBootstrap springApp = new AppBootstrap(ContentCraftPlugin.logger);
-		springApp.bootstrapSpring();
+		context = springApp.bootstrapSpring();
 	}
 	
 	/**

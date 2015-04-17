@@ -8,6 +8,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
 
+	<context:annotation-config/>
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>messaging.properties</value>
@@ -20,4 +21,18 @@
 	<bean id="activeMqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 		<property name="brokerURL" value="${spring.activemq.brokerUrl}" />
 	</bean>
+	
+	<bean id="eventListener" class="org.alfresco.contentcraft.events.messaging.EventMessageListenerImpl"/>
+	<bean id="listen" class="org.alfresco.contentcraft.events.Listener">
+		<property name="topic" value="${activemq.topic}" />
+		<property name="clientUniqueId" value="${unique.client.id}" />
+		<property name="connectionFactory" ref="activeMqConnectionFactory" />
+		<property name="listener" ref="jmsListener" />
+	</bean>
+	<bean id="jmsListener" class="org.alfresco.contentcraft.events.messaging.JMSMessageListener">
+		<property name="listener" ref="eventListener" />
+	</bean>	
+	
+	
+	
 </beans>

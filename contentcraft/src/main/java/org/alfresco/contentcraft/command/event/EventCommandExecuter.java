@@ -18,13 +18,9 @@ import org.bukkit.command.CommandSender;
  */
 public class EventCommandExecuter extends BaseCommandExecuter 
 {
-	Listener listener;
-	
 	public EventCommandExecuter(String name, Map<String, Object> properties) 
 	{
 		super(name, properties);
-		listener = new Listener(ContentCraftPlugin.logger);
-		
 	}
 
 	public void onCommandImpl(CommandSender sender, Command command, String label, String[] args) throws CommandUsageException
@@ -33,12 +29,19 @@ public class EventCommandExecuter extends BaseCommandExecuter
 		{
 			throw new CommandUsageException("Usage: connect [topicname] | disconnect");
 		}
+		Listener listener = (Listener) ContentCraftPlugin.context.getBean("listen");
 		String action = args[0];
 		switch (action) {
 		case "connect":
-			listener.connect("tcp://localhost:61616", args[1]);				
+			if (listener.connect()) {
+				sender.sendMessage("Connected and listening for events.");				
+			}			
 			break;
-
+		case "disconnect":
+			if (listener.disconnect()) {
+				sender.sendMessage("Disconnected, no longer listening.");				
+			}			
+			break;			
 		default:
 			sender.sendMessage("Unrecognised "+Arrays.toString(args));			
 			break;

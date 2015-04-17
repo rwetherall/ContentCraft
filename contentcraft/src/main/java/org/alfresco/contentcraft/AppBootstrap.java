@@ -21,7 +21,7 @@ public class AppBootstrap {
 		this.logger = logger;
 	}
 
-	public void bootstrapSpring() {
+	public ApplicationContext bootstrapSpring() {
         logger.info("Initializing Spring context.");
         
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("application-context.xml") {
@@ -34,6 +34,7 @@ public class AppBootstrap {
             }
         };
        
-        logger.info("..Initialized Spring context: "+ applicationContext.getBeanDefinitionCount() + " beans.");      
+        logger.info("..Initialized Spring context: "+ applicationContext.getBeanDefinitionCount() + " beans.");
+        return applicationContext;
 	}
 }
