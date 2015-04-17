@@ -8,7 +8,7 @@ import org.junit.Test;
  * @author Gethin James
  *
  */
-public class TestAppBoot {
+public class AppBootTest {
 
 	@Test
 	public void testSprintBootstrap()
