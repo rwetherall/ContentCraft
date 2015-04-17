@@ -22,7 +22,19 @@
 		<property name="brokerURL" value="${spring.activemq.brokerUrl}" />
 	</bean>
 	
-	<bean id="eventListener" class="org.alfresco.contentcraft.events.messaging.EventMessageListenerImpl"/>
+	<bean id="folderEventHandler" class="org.alfresco.contentcraft.events.messaging.FolderEventHandler"/>
+	<bean id="docEventHandler" class="org.alfresco.contentcraft.events.messaging.DocumentEventHandler"/>
+		
+	<bean id="eventListener" class="org.alfresco.contentcraft.events.messaging.EventMessageListenerImpl">
+	   <property name="handlers">
+            <map>
+                <entry key="activity.org.alfresco.documentlibrary.folder-added" value-ref="folderEventHandler" />
+                <entry key="activity.org.alfresco.documentlibrary.folder-deleted" value-ref="folderEventHandler" />
+                <entry key="activity.org.alfresco.documentlibrary.file-added" value-ref="docEventHandler" />
+                <entry key="activity.org.alfresco.documentlibrary.file-deleted" value-ref="docEventHandler" />
+          </map>
+        </property>
+	</bean>        
 	<bean id="listen" class="org.alfresco.contentcraft.events.Listener">
 		<property name="topic" value="${activemq.topic}" />
 		<property name="clientUniqueId" value="${unique.client.id}" />
