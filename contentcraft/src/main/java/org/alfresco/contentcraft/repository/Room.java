@@ -3,9 +3,6 @@
  */
 package org.alfresco.contentcraft.repository;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,13 +10,11 @@ import java.util.List;
 import org.alfresco.contentcraft.command.macro.Macro;
 import org.alfresco.contentcraft.command.macro.MacroCallback;
 import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
-import org.alfresco.contentcraft.util.CommonUtil;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.alfresco.cmis.client.AlfrescoFolder;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
@@ -27,10 +28,9 @@ public class CMIS
 	private static final String CMIS_CONFIG_FILE = "cmis.json";
 	private static boolean isInit = false;
 	
-	private static String ALFRSCO_ATOMPUB_URL; // = "http://localhost:8080/alfresco/service/cmis";
-	private static String REPOSITORY_ID; // = "cc6265b4-ba96-4289-b5c4-5a9ab77f8999";
-	private static String USER; // = "admin";
-	private static String PASSWORD; // = "admin";
+	private static String alfrescoAtomPubURL; 
+	private static String user; 
+	private static String password;
 	
 	private static Session session;
 	
@@ -44,10 +44,9 @@ public class CMIS
 			JSONParser jsonParser = new JSONParser();
 			JSONObject jsonCMIS = (JSONObject)jsonParser.parse(reader);
 			
-			CMIS.ALFRSCO_ATOMPUB_URL = (String)jsonCMIS.get("connection-url");
-			CMIS.REPOSITORY_ID = (String)jsonCMIS.get("repository-id");
-			CMIS.USER = (String)jsonCMIS.get("user");
-			CMIS.PASSWORD = (String)jsonCMIS.get("password");
+			alfrescoAtomPubURL = (String)jsonCMIS.get("connection-url");
+			user = (String)jsonCMIS.get("user");
+			password = (String)jsonCMIS.get("password");
 		}
 		catch (Exception e)
 		{
@@ -68,15 +67,23 @@ public class CMIS
     		}
     		
     		SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
-    		Map<String, String> parameter = new HashMap<String, String>();
-    		parameter.put(SessionParameter.USER, USER);
-    		parameter.put(SessionParameter.PASSWORD, PASSWORD);
-    		parameter.put(SessionParameter.ATOMPUB_URL, ALFRSCO_ATOMPUB_URL);
-    		parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-    		parameter.put(SessionParameter.REPOSITORY_ID, REPOSITORY_ID);
-    		parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
+    		Map<String, String> parameters = new HashMap<String, String>();
     		
-    		session = sessionFactory.createSession(parameter);
+    		// User credentials.
+    		parameters.put(SessionParameter.USER, user);
+    		parameters.put(SessionParameter.PASSWORD, password);
+
+    		// Connection settings.
+    		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+    		parameters.put(SessionParameter.ATOMPUB_URL, alfrescoAtomPubURL); // URL to your CMIS server.
+    		parameters.put(SessionParameter.AUTH_HTTP_BASIC, "true" );
+    		parameters.put(SessionParameter.COOKIES, "true" );
+    		parameters.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
+
+    		// Create session.
+    		// Alfresco only provides one repository.
+    		Repository repository = sessionFactory.getRepositories(parameters).get(0);
+    		session = repository.createSession();
 	    }
 	    
 	    return session;
@@ -84,12 +91,12 @@ public class CMIS
 	
 	public static String testConnect()
 	{
-		String result = "Unable to connect to " + ALFRSCO_ATOMPUB_URL;
+		String result = "Unable to connect to " + alfrescoAtomPubURL;
 		Session session = CMIS.getSession();		
 		Folder rootFolder = session.getRootFolder();
 		if (rootFolder != null)
 		{
-			result = "Successfully connected to " + ALFRSCO_ATOMPUB_URL; 
+			result = "Successfully connected to " + alfrescoAtomPubURL; 
 		}
 		return result;
 	}

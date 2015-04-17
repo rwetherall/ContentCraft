@@ -1,8 +1,8 @@
 package org.alfresco.contentcraft.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.alfresco.contentcraft.util.CommonUtil;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -13,19 +13,9 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEditBookEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.BookMeta;
-import org.alfresco.contentcraft.ContentCraftPlugin;
 
 public class BookListener implements Listener
 {

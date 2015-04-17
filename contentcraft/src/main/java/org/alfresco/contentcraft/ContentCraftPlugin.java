@@ -4,17 +4,14 @@
 package org.alfresco.contentcraft;
 
 import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.alfresco.contentcraft.repository.BookListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import org.alfresco.contentcraft.events.listener.DocumentListener;
 /**
  * Content craft plugin implementation
  * 

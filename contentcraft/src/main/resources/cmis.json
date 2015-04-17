@@ -1,6 +1,5 @@
 {
-	"connection-url" : "http://localhost:8080/alfresco/service/cmis",
-	"repository-id" : "cc6265b4-ba96-4289-b5c4-5a9ab77f8999",
+	"connection-url" : "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom",
 	"user" : "admin",
 	"password" : "admin"
 }
