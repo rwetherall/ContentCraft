@@ -7,6 +7,7 @@ import junit.framework.Assert;
 
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ import org.junit.Test;
 public class CMISUnitTest 
 {
 	@Test
+	@Ignore
 	public void getDocumentLibFolderForASite()
 	{
 		Session session = CMIS.getSession();

@@ -85,6 +85,10 @@ public class ContentCraftPlugin extends JavaPlugin
 		// register the book listner
 		BookListener bookListener = new BookListener();
 		getServer().getPluginManager().registerEvents((Listener)bookListener, this);
+		
+		//Start Spring
+		AppBootstrap springApp = new AppBootstrap(ContentCraftPlugin.logger);
+		springApp.bootstrapSpring();
 	}
 	
 	/**
