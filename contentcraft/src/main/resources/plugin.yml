@@ -25,3 +25,7 @@ commands:
     executor: org.alfresco.contentcraft.command.bulldozer.BulldozerCommandExecuter
     description: Bull dozing time
     usage: /<command>
+  events:
+    executor: org.alfresco.contentcraft.command.event.EventCommandExecuter 
+    description: Everything to do with events
+    usage: /<command> connect|disconnect
