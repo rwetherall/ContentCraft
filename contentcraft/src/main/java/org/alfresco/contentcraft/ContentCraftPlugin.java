@@ -7,7 +7,9 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.alfresco.contentcraft.metadata.BlockMetaData;
 import org.alfresco.contentcraft.repository.BookListener;
+import org.alfresco.contentcraft.repository.ChestListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -61,32 +63,35 @@ public class ContentCraftPlugin extends JavaPlugin
 						
 						// set the command executor
 						getCommand(entry.getKey()).setExecutor(commandExecutor);
- 		         ContentCraftPlugin.logger.info("Command is: " + commandExecutor);
+						ContentCraftPlugin.logger.info("Command is: " + commandExecutor);
 						
 						// if the command is a listener
 						if (commandExecutor instanceof Listener)
 						{
 							// register events
 							getServer().getPluginManager().registerEvents((Listener)commandExecutor, this);
-		          ContentCraftPlugin.logger.info("Command registered");
+							ContentCraftPlugin.logger.info("Command registered");
 						}
 					}
 					catch (Exception exception)
 					{
 						exception.printStackTrace();
 					} 
-				} else {
+				} else 
+				{
 					ContentCraftPlugin.logger.info("we got no class");
 				}
 			}
-		} else {
+		} else 
+		{
 			ContentCraftPlugin.logger.info("Where are the commands?");
 		}
 		
 		// TODO do better
-		// register the book listner
-		BookListener bookListener = new BookListener();
-		getServer().getPluginManager().registerEvents((Listener)bookListener, this);
+		// register the listeners
+		getServer().getPluginManager().registerEvents((Listener)new BookListener(), this);
+		getServer().getPluginManager().registerEvents((Listener)new ChestListener(), this);
+		getServer().getPluginManager().registerEvents((Listener)new BlockMetaData(), this);
 		
 		//Start Spring
 		AppBootstrap springApp = new AppBootstrap(ContentCraftPlugin.logger);

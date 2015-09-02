@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>contentcraft</name>
+	<name>ContentCraft</name>
 
 	<repositories>
 		<repository>
@@ -77,13 +77,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		<dependency>
 			<groupId>org.alfresco.services</groupId>
 			<artifactId>alfresco-events</artifactId>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 			<version>${eventsVersion}</version>
-		</dependency>		
+		</dependency>
+		<dependency>		
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-impl</artifactId>
 			<version>0.10.0</version>

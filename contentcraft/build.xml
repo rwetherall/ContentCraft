@@ -6,14 +6,14 @@
 
 	<property environment="env" />
 	
-	<target name="install">
+	<target name="build">
       <exec executable="${mvn.exec}" failonerror="true">
          <arg value="install" />
          <arg value="-DskipTests" />
       </exec>
    </target>
 	
-	<target name="deploy" depends="install">
+   <target name="deploy" depends="build">
 		<copy file="${jar.contentcraft}" todir="${dir.plugins}" failonerror="true" />
    </target>
 	
