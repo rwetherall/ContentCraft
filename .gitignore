@@ -28,13 +28,13 @@ target
 
 build.local.properties
 
-mc-server
+mc-server/logs/**
+mc-server/*.json
+mc-server/whitelist.json
+
+
 lib
 
 *.temp
-
-mc-server/eula.txt
-mc-server/blockmetadata.bin
-mc-server/*.jar
 
 
