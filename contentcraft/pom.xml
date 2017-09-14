@@ -15,13 +15,19 @@
 			<name>Alfresco Maven Repository</name>
 			<url>http://maven.alfresco.com/nexus/content/groups/public/</url>
 		</repository>
+		<repository>
+        	<id>spigot-repo</id>
+        	<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    	</repository>
 	</repositories>
+	
 	<properties>
 		<springVersion>4.1.5.RELEASE</springVersion>
 		<activemqVersion>5.10.2</activemqVersion>
 		<gytheioVersion>0.2</gytheioVersion>
 		<eventsVersion>1.2.4</eventsVersion>
 	</properties>
+	
 	<build>
 		<plugins>
 
@@ -63,19 +69,38 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<artifactId>spigot-api</artifactId>
-			<groupId>org.spigotmc</groupId>
-			<version>1.8.3-R0.1-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/mc-server/spigot-1.8.3-R0.1-SNAPSHOT-latest.jar</systemPath>
-		</dependency>
+	
+		<!-- Spigot API-->
+	    <dependency>
+	        <groupId>org.spigotmc</groupId>
+	        <artifactId>spigot-api</artifactId>
+	        <version>1.12.1-R0.1-SNAPSHOT</version>
+	        <scope>provided</scope>
+	    </dependency>
+	    
+	    <!-- Bukkit API-->
+	    <dependency>
+	        <groupId>org.bukkit</groupId>
+	        <artifactId>bukkit</artifactId>
+	        <version>1.12.1-R0.1-SNAPSHOT</version>
+	        <scope>provided</scope>
+	    </dependency>
+	    
+	    <!--  Alfresco Client API -->
+<!--   <dependency>
+		  	<groupId>org.alfresco.client</groupId>
+		  	<artifactId>alfresco-java-client</artifactId>
+		  	<version>1.0.0-beta1</version>
+		</dependency> -->
+	    
+	    <!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.alfresco.services</groupId>
 			<artifactId>alfresco-events</artifactId>
