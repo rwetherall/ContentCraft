@@ -19,10 +19,6 @@
 **/world_nether/**
 **/world_the_end/**
 
-**/mc-server/*.json
-**/mc-server/logs
-**/mc-server/plugins/*.*
-
 dependency-reduced-pom.xml
 
 target
@@ -31,15 +27,14 @@ target
 .settings
 
 build.local.properties
-contentcraft/mc-server/alfresco-world/stats/d23efcd1-1434-4192-a853-26f310d7dc1f.json
-contentcraft/mc-server/alfresco-world/stats/2f26bfee-0d75-45a8-8bd8-7bc5d70a08f8.json
-contentcraft/mc-server/crash-reports/crash-2014-09-10_11.00.26-server.txt
-contentcraft/mc-server/.update-lock
+
+mc-server
+lib
+
 *.temp
-contentcraft/mc-server/macros/*.json
-contentcraft/lib/BuildTools.log.txt
-contentcraft/lib/BuildData
-contentcraft/lib/Bukkit
-contentcraft/lib/CraftBukkit
-contentcraft/lib/Spigot
-contentcraft/lib/work
+
+mc-server/eula.txt
+mc-server/blockmetadata.bin
+mc-server/*.jar
+
+
