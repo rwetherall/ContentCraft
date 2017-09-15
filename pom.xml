@@ -198,28 +198,27 @@
 			<id>start-server</id>
 			<build>
 				<plugins>
-					<plugin>
-				        <groupId>org.codehaus.mojo</groupId>
-				        <artifactId>exec-maven-plugin</artifactId>
-				        <version>1.2.1</version>
+					 <plugin>
+				        <artifactId>maven-antrun-plugin</artifactId>
+				        <version>1.8</version>
 				        <executions>
-				            <execution>
-				                <id>default-cli</id>
-                        		<phase>package</phase>
-				                <goals>
-				                    <goal>exec</goal>
-				                </goals>
-				                <configuration>
-				                    <executable>java</executable>
-				                    <workingDirectory>${project.build.directory}/mc-server</workingDirectory>
-				                    <arguments>
-				                        <argument>-jar</argument>
-				                        <argument>${project.build.directory}/mc-server/spigot-1.12.1.jar</argument>
-				                    </arguments>
-				                </configuration>                        
-				            </execution>
+				          <execution>
+				            <phase>package</phase>
+				            <configuration>
+				              <target>				
+				                <java jar="${project.build.directory}/mc-server/spigot-1.12.1.jar" fork="true" dir="${project.build.directory}/mc-server">
+									<jvmarg value="-Xmx1024M"/>
+								    <arg value="-o"/>
+									<arg value="true"/>			
+								</java>			
+				              </target>
+				            </configuration>
+				            <goals>
+				              <goal>run</goal>
+				            </goals>
+				          </execution>
 				        </executions>
-				    </plugin> 				
+				      </plugin> 				
 				</plugins>
 			</build>		
 		</profile>	
