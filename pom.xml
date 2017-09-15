@@ -24,6 +24,32 @@
 	<build>
 		<plugins>
 		
+		    <plugin>
+			    <artifactId>maven-clean-plugin</artifactId>
+			    <version>3.0.0</version>
+			    <configuration>
+			      <excludeDefaultDirectories>true</excludeDefaultDirectories>
+			      <filesets>
+			        <fileset>
+			          <directory>${project.build.directory}</directory>
+			          <excludes>
+			            <exclude>mc-server/**/*.*</exclude>
+			          </excludes>
+			          <followSymlinks>false</followSymlinks>
+			        </fileset>
+			        <fileset>
+			          <directory>${project.build.outputDirectory}</directory>
+			        </fileset>
+			        <fileset>
+			          <directory>${project.build.testOutputDirectory}</directory>
+			        </fileset>
+			        <fileset>
+			          <directory>${project.reporting.outputDirectory}</directory>
+			        </fileset>
+			      </filesets>
+			    </configuration>
+			</plugin>
+		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -56,6 +82,25 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-antrun-plugin</artifactId>
+	            <version>1.8</version>
+	            <executions>
+	                <execution>
+	                    <phase>package</phase>
+	                    <configuration>
+	                        <target>
+	                            <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" tofile="${project.build.directory}/mc-server/plugins/${project.artifactId}-${project.version}.jar"/>
+	                        </target>
+	                    </configuration>
+	                    <goals>
+	                        <goal>run</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
 
 		</plugins>
 
@@ -104,6 +149,38 @@
 			<artifactId>alfresco-opencmis-extension</artifactId>
 			<version>0.2</version>
 		</dependency>
-		
+				
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>start-server</id>
+			<build>
+				<plugins>
+					<plugin>
+				        <groupId>org.codehaus.mojo</groupId>
+				        <artifactId>exec-maven-plugin</artifactId>
+				        <version>1.2.1</version>
+				        <executions>
+				            <execution>
+				                <id>default-cli</id>
+                        		<phase>package</phase>
+				                <goals>
+				                    <goal>exec</goal>
+				                </goals>
+				                <configuration>
+				                    <executable>java</executable>
+				                    <workingDirectory>${project.build.directory}/mc-server</workingDirectory>
+				                    <arguments>
+				                        <argument>-jar</argument>
+				                        <argument>${project.build.directory}/mc-server/spigot-1.12.1.jar</argument>
+				                    </arguments>
+				                </configuration>                        
+				            </execution>
+				        </executions>
+				    </plugin> 				
+				</plugins>
+			</build>		
+		</profile>	
+	</profiles>
 </project>

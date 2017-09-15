@@ -21,16 +21,23 @@
 
 dependency-reduced-pom.xml
 
-target
 .classpath
 .project
 .settings
 
 build.local.properties
 
-mc-server/logs/**
-mc-server/*.json
-mc-server/whitelist.json
+**/mc-server/logs/**
+**/mc-server/plugins/**
+**/mc-server/*.json
+**/surefire-reports/**
+target/*.jar
+
+**/antrun/**
+**/maven-archiver/**
+
+
+**/classes/**
 
 
 lib
