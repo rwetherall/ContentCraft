@@ -19,7 +19,7 @@ import org.bukkit.event.server.PluginEnableEvent;
 public class BlockMetaData implements Listener
 {
 	private static final String file = "blockmetadata.bin";
-	private static Map<String, Map<String, Serializable>> metadata;
+	private static Map<String, Map<String, Serializable>> metadata = new HashMap<String, Map<String,Serializable>>();
 
 	@EventHandler
 	public void onDisable(PluginDisableEvent event)
@@ -62,19 +62,21 @@ public class BlockMetaData implements Listener
 			try 
 			{
 				fileIn = new FileInputStream(file);
-				in = new ObjectInputStream(fileIn);
-				metadata = (Map<String, Map<String, Serializable>>)in.readObject();
-				
-				if (metadata == null)
+				if (fileIn != null)
 				{
-					metadata = new HashMap<String, Map<String, Serializable>>(10);
+					in = new ObjectInputStream(fileIn);
+					metadata = (Map<String, Map<String, Serializable>>)in.readObject();
+					
+					if (metadata == null)
+					{
+						metadata = new HashMap<String, Map<String, Serializable>>(10);
+					}
 				}
 			} 
 			finally
 			{
-				in.close();
-				fileIn.close();
-				
+				if (in != null) { in.close(); }
+				if (fileIn != null) { fileIn.close(); }				
 			}
 		}
 		catch (IOException | ClassNotFoundException e) 

@@ -75,9 +75,15 @@ public class ChestListener implements Listener
         
         BookMeta bookMeta = (BookMeta)book.getItemMeta();
         
-        bookMeta.setLore(Collections.singletonList(document.getName()));
-        bookMeta.setAuthor((String)document.getPropertyValue(PropertyIds.CREATED_BY));        
-        bookMeta.setTitle(document.getId());
+        String id = document.getId();
+        String author = (String)document.getPropertyValue(PropertyIds.CREATED_BY);
+        String name = document.getName();
+        
+        ContentCraftPlugin.logger.info("Setting document meta-data - " + id + "," + name + "," + author);
+        
+        bookMeta.setDisplayName(name);        
+        bookMeta.setAuthor(author);        
+        bookMeta.setLocalizedName(id);
         
         String content = CommonUtil.getContentAsString(document.getContentStream());  
         List<String> pages = CommonUtil.split(content, 16, 265);

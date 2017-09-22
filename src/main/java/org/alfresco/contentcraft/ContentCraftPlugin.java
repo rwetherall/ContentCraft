@@ -5,6 +5,7 @@ package org.alfresco.contentcraft;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.alfresco.contentcraft.metadata.BlockMetaData;
@@ -36,7 +37,8 @@ public class ContentCraftPlugin extends JavaPlugin
 	@Override
 	public void onEnable() 
 	{
-		ContentCraftPlugin.logger.info("onEnable had been invoked");
+		
+		ContentCraftPlugin.logger.info("onEnable had been invoked ...");
 		ContentCraftPlugin.plugin = this;
 		
 		// get the plugin description file

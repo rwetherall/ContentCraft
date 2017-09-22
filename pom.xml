@@ -92,7 +92,10 @@
 	                    <phase>package</phase>
 	                    <configuration>
 	                        <target>
-	                            <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar" tofile="${project.build.directory}/mc-server/plugins/${project.artifactId}-${project.version}.jar"/>
+	                            <copy 
+	                            	file="${project.build.directory}/${project.artifactId}-${project.version}.jar" 
+	                            	tofile="${project.build.directory}/mc-server/plugins/${project.artifactId}-${project.version}.jar"
+	                            	overwrite="true" />
 	                        </target>
 	                    </configuration>
 	                    <goals>
@@ -125,10 +128,10 @@
 	    </dependency>
 	    
 	    <!--  Alfresco Client API -->
-<!--   <dependency>
+      <!--  <dependency>
 		  	<groupId>org.alfresco.client</groupId>
-		  	<artifactId>alfresco-java-client</artifactId>
-		  	<version>1.0.0-beta1</version>
+		  	<artifactId>swagger-java-client</artifactId>
+		  	<version>1.0.0</version>
 		</dependency> -->
 	    
 	    <!-- JUnit -->

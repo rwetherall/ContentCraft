@@ -1,7 +1,9 @@
 package org.alfresco.contentcraft.repository;
 
 import java.util.List;
+import java.util.logging.Level;
 
+import org.alfresco.contentcraft.ContentCraftPlugin;
 import org.alfresco.contentcraft.cmis.CMIS;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
@@ -10,24 +12,43 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class BookListener implements Listener
 {
     @EventHandler
     public void playerEditBookEvent(PlayerEditBookEvent playerEditBookEvent)
     {
-    	List<String> lore = playerEditBookEvent.getNewBookMeta().getLore();
-        if (!lore.isEmpty())
-        {
-            String id = playerEditBookEvent.getNewBookMeta().getTitle();
-            String name = lore.get(0);
-            Document document = (Document)CMIS.getSession().getObject(id);
-            List<String> pages = playerEditBookEvent.getNewBookMeta().getPages();
-            
-            String pagesAsString = StringUtils.join(pages, "");
-            ContentStream contentStream = new ContentStreamImpl(name, "text/plain", pagesAsString);            
-            document.setContentStream(contentStream, true);
-        }
+		ContentCraftPlugin.logger.log(Level.INFO, "onPlayerEditBookEvent");
+	
+	    // get the book meta-data
+		BookMeta book = playerEditBookEvent.getPreviousBookMeta();
+		BookMeta newBook = playerEditBookEvent.getNewBookMeta();
+	
+		// get the name and id of the document
+        String id = book.getLocalizedName();
+        String name = book.getDisplayName();      
+        String author = book.getAuthor();
+        
+        ContentCraftPlugin.logger.info("Got document meta-data - " + id + "," + name + "," + author);
+        
+        // get the pages from the book
+        List<String> pages = newBook.getPages();            
+        String pagesAsString = StringUtils.join(pages, "");
+        
+        ContentCraftPlugin.logger.info("Sending updated pages .. " + pagesAsString);
+        
+        // update the document with the new text
+        Document document = (Document)CMIS.getSession().getObject(id);            
+        ContentStream contentStream = new ContentStreamImpl(name, "text/plain", pagesAsString);            
+        document.setContentStream(contentStream, true);
+                
+        newBook.setLocalizedName(id);
+        newBook.setDisplayName(name);
+        newBook.setAuthor(author);
+        
+        playerEditBookEvent.setNewBookMeta(newBook);
+
     }
     
 
