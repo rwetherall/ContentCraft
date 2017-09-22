@@ -25,7 +25,7 @@ import org.json.simple.parser.JSONParser;
  */
 public class CMIS 
 {	
-	private static final String CMIS_CONFIG_FILE = "cmis.json";
+	private static final String CMIS_CONFIG_FILE = "alfresco.json";
 	private static boolean isInit = false;
 	
 	private static String alfrescoAtomPubURL; 
@@ -44,7 +44,7 @@ public class CMIS
 			JSONParser jsonParser = new JSONParser();
 			JSONObject jsonCMIS = (JSONObject)jsonParser.parse(reader);
 			
-			alfrescoAtomPubURL = (String)jsonCMIS.get("connection-url");
+			alfrescoAtomPubURL = (String)jsonCMIS.get("connection-url") + "/api/-default-/public/cmis/versions/1.0/atom";
 			user = (String)jsonCMIS.get("user");
 			password = (String)jsonCMIS.get("password");
 		}

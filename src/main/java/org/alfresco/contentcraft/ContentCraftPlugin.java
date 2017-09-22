@@ -5,7 +5,6 @@ package org.alfresco.contentcraft;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.alfresco.contentcraft.metadata.BlockMetaData;
