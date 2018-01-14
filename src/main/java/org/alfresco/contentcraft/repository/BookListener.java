@@ -36,6 +36,8 @@ public class BookListener implements Listener
         List<String> pages = newBook.getPages();            
         String pagesAsString = StringUtils.join(pages, "");
         
+        ContentCraftPlugin.logger.info("Sending updated pages .. " + pagesAsString);
+        
         // update the document with the new text
         Document document = (Document)CMIS.getSession().getObject(id);            
         ContentStream contentStream = new ContentStreamImpl(name, "text/plain", pagesAsString);            

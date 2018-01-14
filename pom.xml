@@ -127,12 +127,12 @@
 	        <scope>provided</scope>
 	    </dependency>
 	    
-	    <dependency>
-		    <groupId>org.alfresco.client</groupId> 
-		    <artifactId>alfresco-java-client</artifactId> 
-		    <version>1.0.0-beta1</version> 
-		</dependency>
-	   
+	    <!--  Alfresco Client API -->
+      <!--  <dependency>
+		  	<groupId>org.alfresco.client</groupId>
+		  	<artifactId>swagger-java-client</artifactId>
+		  	<version>1.0.0</version>
+		</dependency> -->
 	    
 	    <!-- JUnit -->
 		<dependency>

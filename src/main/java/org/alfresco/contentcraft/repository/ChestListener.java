@@ -1,5 +1,6 @@
 package org.alfresco.contentcraft.repository;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.alfresco.contentcraft.ContentCraftPlugin;

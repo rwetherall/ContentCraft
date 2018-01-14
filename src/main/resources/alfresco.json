@@ -1,5 +1,0 @@
-{
-	"connection-url" : "http://ec2-52-62-132-39.ap-southeast-2.compute.amazonaws.com:8080/alfresco",
-	"user" : "admin",
-	"password" : "admin"
-}
