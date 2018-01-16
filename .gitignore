@@ -7,7 +7,7 @@
 *.dat*
 *.lock
 *.mca
-*.yml
+
 
 *banned*
 *ops*
