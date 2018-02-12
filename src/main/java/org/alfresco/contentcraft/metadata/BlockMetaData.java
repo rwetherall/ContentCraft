@@ -1,8 +1,8 @@
 package org.alfresco.contentcraft.metadata;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -57,11 +57,11 @@ public class BlockMetaData implements Listener
 		
 		try
 		{
-			FileInputStream fileIn = null;
+			InputStream fileIn = null;
 			ObjectInputStream in = null;
 			try 
 			{
-				fileIn = new FileInputStream(file);
+				fileIn = getClass().getClassLoader().getResourceAsStream("metadata/" + file);
 				if (fileIn != null)
 				{
 					in = new ObjectInputStream(fileIn);
