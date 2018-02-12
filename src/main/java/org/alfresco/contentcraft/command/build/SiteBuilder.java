@@ -14,6 +14,7 @@ import org.alfresco.contentcraft.command.macro.MacroCommandExecuter;
 import org.alfresco.contentcraft.command.macro.PlaceBlockMacroAction;
 import org.alfresco.contentcraft.repository.Room;
 import org.alfresco.contentcraft.repository.RoomType;
+import org.alfresco.contentcraft.rest.REST;
 import org.alfresco.contentcraft.util.CommonUtil;
 import org.alfresco.contentcraft.util.VectorUtil;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
@@ -21,9 +22,13 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.util.Vector;
 
 /**
@@ -105,7 +110,7 @@ public class SiteBuilder implements Builder
 	/**
 	 * @see org.alfresco.contentcraft.command.build.Builder#build(org.bukkit.entity.Player, org.bukkit.Location, org.bukkit.util.Vector, java.lang.String[])
 	 */
-	public void build(Location start, Vector direction, String... args) throws CommandUsageException
+	public void build(Player player, Location start, Vector direction, String... args) throws CommandUsageException
 	{
 		// get the site we want to use as a base
 		String siteName = args[1];
@@ -123,12 +128,38 @@ public class SiteBuilder implements Builder
 		if (siteRoot == null)
 		{
 			throw new CommandUsageException("The site (" + siteName + ") you provided couldn't be found!");
-		}	
+		}
+		
+		spawnSiteMembers(player, siteName);
 
 		// build the root folders
 		buildRootFolders(start, siteRoot.getChildren());			
 		
-	}	
+	}
+	
+	/**
+	 * Spawn the site members
+	 * 
+	 * @param player
+	 * @param siteName
+	 */
+	private void spawnSiteMembers(Player player, String siteName) {
+		try {
+			List<String> members = REST.getMembers(siteName, REST.getTicket());
+			int count = 1;
+			for (String member : members) {
+		        Location startLocation = player.getLocation().clone().add(VectorUtil.SOUTH.clone().multiply(2*count));
+		        Villager other = (Villager) player.getWorld().spawnEntity(startLocation, EntityType.VILLAGER);
+		        other.setCustomName(ChatColor.GOLD + member);
+		        other.setCustomNameVisible(true);
+		        count++;
+		        System.out.println("Villager " + member + " has been spawned at " + startLocation.getX() + "," + startLocation.getY() + "," + startLocation.getZ());
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+		
+	}
 	
 	/**
 	 * Build the root folders 

@@ -128,11 +128,21 @@
 	    </dependency>
 	    
 	    <!--  Alfresco Client API -->
-      <!--  <dependency>
-		  	<groupId>org.alfresco.client</groupId>
-		  	<artifactId>swagger-java-client</artifactId>
-		  	<version>1.0.0</version>
-		</dependency> -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.1</version>
+		</dependency>
 	    
 	    <!-- JUnit -->
 		<dependency>
@@ -210,7 +220,7 @@
 				            <configuration>
 				              <target>				
 				                <java jar="${project.build.directory}/mc-server/spigot-1.12.1.jar" fork="true" dir="${project.build.directory}/mc-server">
-									<jvmarg value="-Xmx1024M"/>
+									<jvmarg value="-Xmx2048M"/>
 								    <arg value="-o"/>
 									<arg value="true"/>			
 								</java>			
