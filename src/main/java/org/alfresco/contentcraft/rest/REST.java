@@ -90,7 +90,7 @@ public class REST {
 		httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
 		httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 		HttpGet getRequest = 
-				new HttpGet(alfrescoURL + "/s/api/sites/test/memberships?alf_ticket=" + alfrescoTicket);
+				new HttpGet(alfrescoURL + "/s/api/sites/" + siteId + "/memberships?alf_ticket=" + alfrescoTicket);
 
 		HttpResponse response = httpClient.execute(getRequest);
 		JSONParser jsonParser = new JSONParser();
