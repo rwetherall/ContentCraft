@@ -1,0 +1,5 @@
+{
+	"connection-url" : "http://localhost:8080/alfresco",
+	"user" : "admin",
+	"password" : "admin"
+}

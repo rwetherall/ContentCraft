@@ -1,5 +1,5 @@
 {
-	"connection-url" : "http://ec2-52-62-132-39.ap-southeast-2.compute.amazonaws.com:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom",
+	"connection-url" : "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom",
 	"user" : "admin",
 	"password" : "admin"
 }

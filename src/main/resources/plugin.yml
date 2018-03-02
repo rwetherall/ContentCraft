@@ -1,0 +1,31 @@
+name: contentcraft
+version: 0.0.1-SNAPSHOT
+description: Provides CMIS access to Alfresco
+author: rweatherall
+website: https://github.com/rwetherall
+
+main: org.alfresco.contentcraft.ContentCraftPlugin
+load: startup
+database: false
+
+commands:
+  cmis:
+    executor: org.alfresco.contentcraft.command.cmis.CMISCommandExecuter 
+    description: Test CMIS connection
+    usage: /<command>
+  api:
+    executor: org.alfresco.contentcraft.command.api.APICommandExecuter 
+    description: Test Alfresco V1 API connection
+    usage: /<command>
+  macro:
+    executor: org.alfresco.contentcraft.command.macro.MacroCommandExecuter
+    description: Create and Run macros
+    usage: /<command> start|stop|run|list|delete
+  build:
+    executor: org.alfresco.contentcraft.command.build.BuildCommandExecuter
+    description: Build a site
+    usage: /<command> site {sitename}
+  bulldozer:
+    executor: org.alfresco.contentcraft.command.bulldozer.BulldozerCommandExecuter
+    description: Bull dozing time
+    usage: /<command>

@@ -62,9 +62,11 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 		}
 		
 		Location location = null;
+		Player player = null;
 		if (sender instanceof Player)
 		{
 			location = ((Player)sender).getLocation();
+			player = (Player)sender;
 		}
 		else if (sender instanceof BlockCommandSender)
 		{
@@ -77,7 +79,7 @@ public class BuildCommandExecuter extends BaseCommandExecuter
 		location.add(direction.clone().multiply(3));
 		
 		// execute the builder
-		builder.build(location, direction, args);		
+		builder.build(player, location, direction, args);		
 	}
 	
 
